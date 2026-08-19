@@ -9,6 +9,14 @@ metadata:
 
 IRON LAW: Generate at most 5 key risk points. Do NOT trigger for text/comment/style-only changes.
 
+## 实质影响原则（每个风险点必须过这一关）
+
+- 先问：**这个风险点对项目有没有实质性影响？**
+- 实质性影响 = 不改会引发问题（逻辑错 / 数据错 / 崩溃 / 下游破坏 / 性能劣化 / 安全风险），或改了有可感知收益
+- **无实质影响的不提**：改了（或没改）对实际功能、性能、可维护性、兼容性等任何方面都无差异的点，不提
+- **不能为了提问题而提问题**：凑数、刷存在感、仅风格偏好、可改可不改的点，一律剔除
+- 产出宁可少而准，不可多而废——风险点是给用户确认的，不是清单展览
+
 ## Workflow
 
 Copy this checklist and check off items as you complete them:
@@ -58,7 +66,7 @@ Use the six code-adapted Socratic questions:
 
 ## Step 4: Generate 3-5 Key Risk Points
 
-Based on self-questioning, output 3-5 concrete risk points.
+Based on self-questioning, output 3-5 concrete risk points. **每个风险点先用「实质影响原则」过滤**——无实质影响的剔除，宁缺毋滥。
 
 Format:
 
@@ -83,6 +91,8 @@ Ask user to check each item. Do NOT proceed to next workflow step until user con
 - Do NOT generate more than 5 risk points.
 - Do NOT trigger for text/comment/style-only changes.
 - Do NOT modify code based on risk points without user approval.
+- Do NOT raise points with no substantive impact (style-only, cosmetic, optional refactors).
+- Do NOT pad the count to hit 3-5 — fewer real risks beats filler.
 
 ## Pre-Delivery Checklist
 
