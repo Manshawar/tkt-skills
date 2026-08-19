@@ -35,7 +35,9 @@ Common scenarios:
 - 有需求，要写规格
 - 规格好了，要拆任务
 - 任务好了，要实现
-- 实现完了，要评审
+- **需求明确，直接实现（不调前期链）** → 走 `workflow-grill.md` 的「最短路径」
+- 实现完了，要验证 → `workflow-verify.md`
+- 实现完了，要验收 → `workflow-socratic.md`
 - 没思路，要 brainstorm
 - 想装某个外部 skill / plugin（如 superpowers、grill-me）→ 走 external-deps.md
 
@@ -45,7 +47,11 @@ Based on user answer, read the matching reference file:
 
 | Scenario | Reference |
 |---|---|
-| 需求模糊 / 写规格 / 拆任务 / 实现 / 评审 | `references/workflow-grill.md` |
+| 需求模糊 / 写规格 / 拆任务 / 评审 | `references/workflow-grill.md` |
+| **需求明确 / 直接实现** | `references/workflow-grill.md`（最短路径，见文件开头） |
+| **实现阶段纪律** | `references/workflow-implement.md` |
+| **验证 / 测试** | `references/workflow-verify.md` |
+| **验收 / 风险审查** | `references/workflow-socratic.md` |
 | 没思路 / 重设计 | `references/workflow-superpower.md` |
 | **想装外部 skill / plugin** | `references/external-deps.md` |
 
