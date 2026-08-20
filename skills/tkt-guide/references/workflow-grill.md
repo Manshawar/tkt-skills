@@ -1,37 +1,17 @@
-# Grill 工作流
+# Grill / 实现工作流
 
-## 最短路径（需求明确时）
+## 需求明确（边界清楚）
 
-需求边界清楚、无需澄清 → **跳过 grill-me / to-spec / to-tickets**：
+跳过 grill / 规格链。小改动（单文件/单行为）直接实现，验证走 `typecheck → build`；用户流程改动（页面/API）加 `e2e`（层级见 workflow-verify.md）。新功能/新 API 完成后再走验收（`/tkt-socratic`）。
 
-```
-直接实现 → /tkt-socratic（新功能/新 API 才需）；验证按改动类型选层级（见 workflow-verify.md）
-```
+## 需求模糊 / 方案探讨 / 写规格拆任务
 
-小改动（单文件/单行为）直接改，验证走 `typecheck → build` 即可；用户流程改动（页面/API）加 `e2e`。
+走开发链：grill-me → to-spec → to-tickets → implement → code-review
 
-## 完整链
+- 与项目 AGENTS.md「常用流程」同链，此处只路由不展开
+- 环节缺失时给 `npx skills add` 命令，不替用户安装（命令见 external-deps.md）
 
-80% 场景走这条链：
-
-grill-me / grill-with-docs → to-spec → to-tickets → implement → code-review
-
-每个阶段缺失时，给用户对应 `npx skills add` 命令，不替用户安装。
-
-## 全局安装命令
-
-```bash
-npx skills add mattpocock/skills -g \
-  --skill grill-me \
-  --skill grilling \
-  --skill grill-with-docs \
-  --skill to-spec \
-  --skill to-tickets \
-  --skill implement \
-  --skill code-review
-```
-
-## 各阶段命令
+## 各阶段命令速查
 
 | 阶段 | 命令 |
 |---|---|
@@ -39,6 +19,5 @@ npx skills add mattpocock/skills -g \
 | 写规格 | `/to-spec` |
 | 拆任务 | `/to-tickets` |
 | 实现 | `/implement` |
-| 验收 | `/tkt-socratic` (新功能/接口/数据流改动时) |
-| 验证 | 按改动类型选层级（workflow-verify.md 表） |
+| 验收 | `/tkt-socratic`（新功能/接口/数据流改动时） |
 | 评审 | `/code-review` |
