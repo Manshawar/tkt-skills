@@ -34,7 +34,19 @@ e2e/ 初始化完成后,后续的用例查看、触发跑、结果留痕走 `tkt
 
 保留最近 50 轮。平台 UI 聚合读归档展示各项目历史。
 
+## 测试环境(被测功能依赖本机服务时)
+
+被测功能若依赖本机常驻服务(如 tkt 平台页 `/test` 依赖 tkt ui API 38471),e2e 测该模块时需**同时起该服务**——playwright 的 `webServer` 只起被测试前端。服务未起时,依赖 API 的 P1 用例会 `skip`,P0 确定性用例照常绿。
+
 ## 约定
 
-- e2e 的 `playwright.config.ts` 保持 `reporter: [['list'], ['@midscene/web/playwright-reporter']]`,**不要配 json**;平台触发跑时用 CLI `--reporter` 覆盖追加 json(json 输出由 `PLAYWRIGHT_JSON_OUTPUT_NAME` env 控制到归档目录,config 内配 json 的 outputFile 会覆盖 env,导致平台无法按轮次归档)
+- `playwright.config.ts` 的 reporter 配 midscene **separate** + json 固定输出(**不要**用 CLI `--reporter` 覆盖——会重置 midscene 为 merged、删 per-test 报告):
+  ```ts
+  reporter: [
+    ['list'],
+    ['@midscene/web/playwright-reporter', { type: 'separate' }],
+    ['json', { outputFile: 'midscene_run/last-run.json' }],
+  ]
+  ```
+  `separate` 保留 per-test 报告(平台按用例挂报告链接);json 固定路径供平台跑完解析归档。config 内 json 的 `outputFile` 优先于 `PLAYWRIGHT_JSON_OUTPUT_NAME` env。
 - cases.json 必选:每个 spec 用例名登记分组/优先级,平台才可按分组触发。
