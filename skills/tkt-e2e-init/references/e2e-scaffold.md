@@ -10,7 +10,7 @@
 ├── playwright.config.ts      # projects 多前端 + webServer.cwd + 真实端口 + json reporter
 ├── fixture.ts                # Midscene fixture
 ├── <name>.spec.ts            # 用例(含登录态注入/路由目标/后端探测)
-├── cases.json                # 分组/优先级(可选)
+├── cases.json                # 分组/优先级(必选,tkt 测试平台靠它分组触发)
 └── .env                      # Midscene 模型配置(用户自填 MIDSCENE_MODEL_* 四项)
 ```
 
@@ -44,7 +44,12 @@ dotenv.config()
 export default defineConfig({
   testDir: './',
   workers: 1,
-  reporter: [['list'], ['@midscene/web/playwright-reporter']],
+  reporter: [
+    ['list'],
+    // separate:tkt 测试平台按用例挂报告,需保留 per-test 报告(merged 模式会删除)
+    ['@midscene/web/playwright-reporter', { type: 'separate' }],
+    ['json', { outputFile: 'midscene_run/last-run.json' }],
+  ],
   use: { baseURL: '{{realPort}}' },
   webServer: {
     cwd: '{{frontendSubdir}}',     // 前端子目录绝对/相对路径,不是项目根
@@ -54,6 +59,8 @@ export default defineConfig({
   },
 })
 ```
+
+要点:`reporter` 配 `separate`(per-test 报告保留,tkt 平台挂载失败用例报告)+ `json` 固定输出 `midscene_run/last-run.json`(平台跑完读取解析)。`tkt test run` 不覆盖 reporter,直接吃 config 这份配置。
 
 多前端(monorepo):用 `projects` 数组,每个前端一个 project:
 
@@ -129,13 +136,18 @@ test('P1 交互', async ({ page, aiAssert }) => {
 - **P0**:不依赖后端/登录的基线冒烟,用确定性断言(`expect(locator)`),免费快
 - **P1**:依赖后端/需要视觉判断,用 `aiAssert`(每次调模型,有成本)
 
-## cases.json(可选)
+## cases.json(必选)
+
+**必须生成**:`tkt test` 平台读它合成用例清单、按分组触发(-g 过滤到 Playwright 原生能力)。缺失则平台无法分组,用例归「未分组」。每个 spec 里 `test("...")` 的用例名都应在此登记分组/优先级:
 
 ```json
 {
-  "P0 页面加载冒烟": { "group": "冒烟", "priority": "P0", "desc": "基线,每次提交必须绿" }
+  "P0 页面加载冒烟": { "group": "冒烟", "priority": "P0", "desc": "基线,每次提交必须绿" },
+  "P1 复杂交互": { "group": "回归", "priority": "P1", "desc": "依赖后端,视觉断言" }
 }
 ```
+
+分组/优先级约定:冒烟 P0(每次提交必绿)、回归 P1/P2(发版前/按需)。平台 UI 按 group 展示与触发。
 
 ## .env
 
