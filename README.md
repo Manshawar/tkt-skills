@@ -15,6 +15,7 @@
 | [tkt-rules](skills/tkt-rules/SKILL.md) | 初始化/维护项目 `AGENTS.md` + `CLAUDE.md`,渐进式披露,WHAT/WHY/HOW | project |
 | [tkt-socratic](skills/tkt-socratic/SKILL.md) | 实现后苏格拉底式复查 — 用模板自问,产出 ≤5 条实质风险点 | global |
 | [tkt-e2e-init](skills/tkt-e2e-init/SKILL.md) | AI 视觉回归测试初始化 — Midscene + Playwright 隔离 e2e/ 子项目 | project |
+| [tkt-test-gen](skills/tkt-test-gen/SKILL.md) | 根据 git diff 生成视觉回归用例 — 半自动(草稿人确认后入库) | project |
 | [tkt-sso-test](skills/tkt-sso-test/SKILL.md) | 线上部署页面测试初始化 — 后台 SSO 真实登录链,不 mock 客户端环境 | project |
 | [visual-debug](skills/visual-debug/SKILL.md) | 纯文本模型 UI 视觉侧车 — `tkt vision` 检视/比对 + 修复循环 | global |
 
