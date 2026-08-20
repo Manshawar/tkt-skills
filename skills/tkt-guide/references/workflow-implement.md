@@ -22,4 +22,4 @@
 - 实现: `/implement`
 - 评审: `/code-review`
 - 验收: `/tkt-socratic`
-- 验证: `/tkt-verify`
+- 验证: 按改动类型选层级（workflow-verify.md 表）

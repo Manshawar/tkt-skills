@@ -1,6 +1,6 @@
 ---
 name: tkt-guide
-description: "Workflow routing guide for AI-assisted development. Ask user which step they are at, then output the next skill or plugin command for the user to run themselves. Use when user says 'what's next', 'which step', 'workflow guide', 'tkt guide', '方案探讨', '方案讨论', '方案选型', '评估方案', '需求讨论', or invokes /tkt-guide. Triggers: workflow, next step, routing, guide, grill, spec, tickets, implement, review, brainstorm, superpower, 方案探讨, 方案讨论, 方案选型, 评估方案, 需求讨论."
+description: "Workflow routing guide for AI-assisted development. Ask user which step they are at, then output the next skill or plugin command for the user to run themselves. Use when user says 'what's next', 'which step', 'workflow guide', 'tkt guide', '方案探讨', '方案讨论', '方案选型', '评估方案', '需求讨论', '验证', or invokes /tkt-guide. Triggers: workflow, next step, routing, guide, grill, spec, tickets, implement, review, brainstorm, superpower, verify, validation, run checks, what tests to run, 验证, 方案探讨, 方案讨论, 方案选型, 评估方案, 需求讨论."
 metadata:
   scope: global
 ---

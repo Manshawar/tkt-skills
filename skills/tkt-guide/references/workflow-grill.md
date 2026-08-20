@@ -5,7 +5,7 @@
 需求边界清楚、无需澄清 → **跳过 grill-me / to-spec / to-tickets**：
 
 ```
-直接实现 → /tkt-verify（按改动类型选层级）→ /tkt-socratic（新功能/新 API 才需）
+直接实现 → /tkt-socratic（新功能/新 API 才需）；验证按改动类型选层级（见 workflow-verify.md）
 ```
 
 小改动（单文件/单行为）直接改，验证走 `typecheck → build` 即可；用户流程改动（页面/API）加 `e2e`。
@@ -40,5 +40,5 @@ npx skills add mattpocock/skills -g \
 | 拆任务 | `/to-tickets` |
 | 实现 | `/implement` |
 | 验收 | `/tkt-socratic` (新功能/接口/数据流改动时) |
-| 验证 | `/tkt-verify` |
+| 验证 | 按改动类型选层级（workflow-verify.md 表） |
 | 评审 | `/code-review` |

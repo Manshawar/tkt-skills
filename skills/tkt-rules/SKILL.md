@@ -123,7 +123,7 @@ Detection mapping:
 | `pyproject.toml` has `mypy` | mypy | `mypy <file>` |
 | `Cargo.toml` + `clippy` | clippy | `cargo clippy <file>` |
 
-Only generate typecheck and lint hooks. Unit test / build / e2e are not hooked — they are triggered manually via `/tkt-verify`.
+Only generate typecheck and lint hooks. Unit test / build / e2e are not hooked — they are triggered manually by change type (see tkt-guide workflow-verify).
 
 Ask user: "Generate hooks for detected checkers? (yes/no)"
 
