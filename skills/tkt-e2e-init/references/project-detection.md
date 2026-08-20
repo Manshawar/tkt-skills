@@ -35,12 +35,13 @@
 查证线索:
 
 - **路由拦截器**:`router-interceptor.ts`、`permission.ts`、`guards/`、`router.beforeEach` —— 未登录跳登录页
-- **动态路由**:`role-router.ts`、按角色/权限生成的路由表 —— 目标页可能不在静态路由里
-- **存储键**:pinia/vuex persist 的 key(常带 `appId` 或环境变量)、`localStorage`/`sessionStorage` 存的 token/user 字段
+- **动态路由**:`role-router.ts`、按角色/权限生成的路由表 —— 目标页可能不在静态路由里。**失效模式**:守卫按 `to.name` 判白名单时,动态路由未注入 → `to.name` 为 undefined → 白名单不生效、落入认证分支跳认证失败页。检测点:①守卫是否用 `to.name` 判白名单 ②目标页是否在按角色动态生成的路由表 —— 二者同时成立 ⇒ 必须注入登录态
+- **存储键**:pinia/vuex persist 的 key(常带 `appId` 或环境变量)、`localStorage`/`sessionStorage` 存的 token/user 字段。**坑**:`pinia-plugin-persist` 未指定 `storage` 时默认 **sessionStorage**,注入目标写成 localStorage 会静默无效
 
 注入方式(写入 spec 的 `beforeEach` 或 `addInitScript`):
 
 ```ts
+// persist 键写 sessionStorage(pinia-plugin-persist 默认 storage);独立 token 键按项目实际存哪
 await page.addInitScript(() => {
   localStorage.setItem('<tokenKey>', '<fake-token>')
   sessionStorage.setItem('<persistKey>', JSON.stringify({ /* 项目需要的 state 结构 */ }))
