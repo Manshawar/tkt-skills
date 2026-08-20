@@ -1,6 +1,6 @@
 ---
 name: tkt-guide
-description: "Workflow routing guide for AI-assisted development. Ask user which step they are at, then output the next skill or plugin command for the user to run themselves. Use when user says 'what's next', 'which step', 'workflow guide', 'tkt guide', or invokes /tkt-guide. Triggers: workflow, next step, routing, guide, grill, spec, tickets, implement, review, brainstorm, superpower."
+description: "Workflow routing guide for AI-assisted development. Ask user which step they are at, then output the next skill or plugin command for the user to run themselves. Use when user says 'what's next', 'which step', 'workflow guide', 'tkt guide', '方案探讨', '方案讨论', '方案选型', '评估方案', '需求讨论', or invokes /tkt-guide. Triggers: workflow, next step, routing, guide, grill, spec, tickets, implement, review, brainstorm, superpower, 方案探讨, 方案讨论, 方案选型, 评估方案, 需求讨论."
 metadata:
   scope: global
 ---
@@ -32,6 +32,7 @@ Ask: "你现在处于哪一步?"
 
 Common scenarios:
 - 需求模糊，需要澄清
+- **做方案探讨 / 方案选型 / 评估取舍** → 走 `workflow-grill.md`（方案评审）
 - 有需求，要写规格
 - 规格好了，要拆任务
 - 任务好了，要实现
@@ -47,7 +48,7 @@ Based on user answer, read the matching reference file:
 
 | Scenario | Reference |
 |---|---|
-| 需求模糊 / 写规格 / 拆任务 / 评审 | `references/workflow-grill.md` |
+| 需求模糊 / 写规格 / 拆任务 / 评审 / **方案探讨·选型·评估** | `references/workflow-grill.md` |
 | **需求明确 / 直接实现** | `references/workflow-grill.md`（最短路径，见文件开头） |
 | **实现阶段纪律** | `references/workflow-implement.md` |
 | **验证 / 测试** | `references/workflow-verify.md` |
