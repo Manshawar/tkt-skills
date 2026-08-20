@@ -1,6 +1,6 @@
 ---
 name: visual-debug
-description: "ONLY for non-multimodal / text-only main models that cannot see images (DeepSeek deepseek-*, GLM glm-* / ChatGLM / Zhipu). Do NOT use if the current model is multimodal (Claude, GPT-4o, Gemini, Grok, Kimi vision) or can already see the attached image — look at pixels directly, do not call tkt vision. Text-only: UI reconstruction via `tkt vision inspect` then edit project code; UI debug via `tkt vision compare`. Repair loop: inspect/compare → modify code → screenshot → compare --from. Also Lanxin / 蓝信 (`html.dark`, `@lanxin/lanxin-theme-v8`)."
+description: "ONLY for non-multimodal / text-only main models that cannot see images (DeepSeek deepseek-*, GLM glm-* / ChatGLM / Zhipu). Do NOT use if the current model is multimodal (Claude, GPT-4o, Gemini, Grok, Kimi vision) or can already see the attached image — look at pixels directly, do not call tkt vision. Text-only: UI reconstruction via `tkt vision inspect` then edit project code; UI debug via `tkt vision compare`. Repair loop: inspect/compare → modify code → screenshot → compare --from. Also enterprise-IM web themes with semantic tokens (`html.dark` + `var(--bg-*)` / `var(--brand)`)."
 metadata:
   scope: global
 ---
@@ -129,13 +129,13 @@ tkt vision assert --tree <tree.json> --dom <dump.json>
 - Track A 交互：0～1 次 inspect 看状态，其余查代码
 - 不重复分析同一张图；代码无视觉改动时不要再分析
 
-## Lanxin / 蓝信（按需）
+## 企业主题（按需）
 
-出现 `@lanxin/lanxin-theme-v8`、`html.dark`、`var(--bg-primary)` / `var(--brand)`，或用户在改深色/色值时：
+出现 `html.dark`、`var(--bg-primary)` / `var(--brand)` 语义 token，或用户在改深色/色值时：
 
-1. **先读** [references/lanxin-theme.md](references/lanxin-theme.md)，再改 CSS
+1. **先读** [references/theme-reference.md](references/theme-reference.md)，再改 CSS
 2. 只用语义别名；禁止硬编码色；禁止组件里写 `--Lx-*`
 3. 主按钮文字是 `--white-10`，不是 `--text-black`
 4. 单色图标用 `lx-icon-*` + `color`，不要 `filter: invert` 切图
 
-非蓝信项目不要加载该参照。
+非该主题项目不要加载该参照。
