@@ -1,6 +1,6 @@
 ---
 name: tkt-socratic
-description: "Post-implementation Socratic review for code changes. AI self-questions using code-adapted templates, generates key risk points (at most 5, no padding) for user confirmation. Use when user says 'socratic check', 'acceptance criteria', 'tkt socratic', or invokes /tkt-socratic. Triggers: socratic, acceptance, risk, checklist, acceptance review."
+description: "On-demand acceptance gate for a finished work delivery — Socratic review that self-questions against the changes and outputs key risk points (at most 5, three gates, no padding) for user confirmation. Use when user says 'socratic check', '验收', '把关', '收尾评价', '风险复盘', 'tkt socratic', or invokes /tkt-socratic. Triggers: socratic, acceptance, risk, checklist, acceptance review, review my work, 验收, 把关, 收尾, 风险复盘."
 metadata:
   scope: global
 ---
