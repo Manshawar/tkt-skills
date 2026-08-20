@@ -9,3 +9,5 @@
 | 功能点实现 | `typecheck` → `lint` → `unit test` |
 | 模块级改动 | `typecheck` → `lint` → `unit test` → `build` |
 | 用户流程改动 | `typecheck` → `lint` → `unit test` → `build` → `e2e` |
+
+> 项目无 e2e 基础设施时，先跑 `/tkt-e2e-init` 初始化，再走 e2e 层。

@@ -31,6 +31,7 @@ Read `references/workflow-index.md` to understand available scenarios.
 Ask: "你现在处于哪一步?"
 
 Common scenarios:
+- **新项目 / 没配过规则（无 AGENTS.md）** → 走 `tkt-rules`（初始化项目规则）
 - 需求模糊，需要澄清
 - **做方案探讨 / 方案选型 / 评估取舍** → 走 `workflow-grill.md`（方案评审）
 - 有需求，要写规格
@@ -48,6 +49,7 @@ Based on user answer, read the matching reference file:
 
 | Scenario | Reference |
 |---|---|
+| **新项目 / 无 AGENTS.md** | `/tkt-rules` |
 | 需求模糊 / 写规格 / 拆任务 / 评审 / **方案探讨·选型·评估** | `references/workflow-grill.md` |
 | **需求明确 / 直接实现** | `references/workflow-grill.md`（最短路径，见文件开头） |
 | **实现阶段纪律** | `references/workflow-implement.md` |

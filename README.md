@@ -14,6 +14,7 @@
 | [tkt-guide](skills/tkt-guide/SKILL.md) | AI 开发工作流路由导引 — 问用户当前在哪一步,输出下一步该跑的 skill/命令 | global |
 | [tkt-rules](skills/tkt-rules/SKILL.md) | 初始化/维护项目 `AGENTS.md` + `CLAUDE.md`,渐进式披露,WHAT/WHY/HOW | project |
 | [tkt-socratic](skills/tkt-socratic/SKILL.md) | 实现后苏格拉底式复查 — 用模板自问,产出 ≤5 条实质风险点 | global |
+| [tkt-e2e-init](skills/tkt-e2e-init/SKILL.md) | AI 视觉回归测试初始化 — Midscene + Playwright 隔离 e2e/ 子项目 | project |
 | [visual-debug](skills/visual-debug/SKILL.md) | 纯文本模型 UI 视觉侧车 — `tkt vision` 检视/比对 + 修复循环 | global |
 
 ## 安装
@@ -56,7 +57,7 @@ skills/<name>/scripts/       # 配套脚本
 
 | 仓库 | 内容 | 安装 |
 | --- | --- | --- |
-| 本仓库 tkt-skills | 公开 skill(tkt-guide / tkt-rules / tkt-socratic / visual-debug / skills-cli) | `npx skills add Manshawar/tkt-skills -g` |
+| 本仓库 tkt-skills | 公开 skill(tkt-guide / tkt-rules / tkt-socratic / tkt-e2e-init / visual-debug / skills-cli) | `npx skills add Manshawar/tkt-skills -g` |
 | toolkit | 私有 skill(clash-verge-rule,含公司内网/代理信息) | `npx skills add Manshawar/toolkit -g`(私有授权) |
 
 ## 开发工作区

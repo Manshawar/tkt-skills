@@ -11,7 +11,7 @@
 ├── fixture.ts                # Midscene fixture
 ├── <name>.spec.ts            # 用例(含登录态注入/路由目标/后端探测)
 ├── cases.json                # 分组/优先级(可选)
-└── .env                      # Midscene 模型配置(从 tkt vision 拷贝)
+└── .env                      # Midscene 模型配置(用户自填 MIDSCENE_MODEL_* 四项)
 ```
 
 ## package.json
@@ -139,4 +139,4 @@ test('P1 交互', async ({ page, aiAssert }) => {
 
 ## .env
 
-从 `tkt vision` 多模态配置拷贝,写 `MIDSCENE_MODEL_BASE_URL/API_KEY/NAME/FAMILY` 四项。模型家族与 provider 不对应时调 `MIDSCENE_MODEL_FAMILY`。
+用户自填,写 `MIDSCENE_MODEL_BASE_URL/API_KEY/NAME/FAMILY` 四项(值来自模型服务商控制台,不拷贝任何既有 CLI 配置)。模型家族与 provider 不对应时调 `MIDSCENE_MODEL_FAMILY`。

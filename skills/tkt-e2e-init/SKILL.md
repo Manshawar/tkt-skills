@@ -72,7 +72,16 @@ pnpm --dir <project>/e2e exec playwright install chromium
 pnpm --dir <project>/e2e exec playwright test
 ```
 
-Midscene model config: copy from `tkt vision` multimodal config into `e2e/.env` (`MIDSCENE_MODEL_*`). If the user's model provider differs, adjust `MIDSCENE_MODEL_FAMILY`.
+Midscene model config: 用户自己填 `e2e/.env`,不依赖任何既有 CLI。先问用户模型服务商,再输出模板让用户填四项:
+
+```
+MIDSCENE_MODEL_BASE_URL=<base_url>
+MIDSCENE_MODEL_API_KEY=<api_key>
+MIDSCENE_MODEL_NAME=<model_name>
+MIDSCENE_MODEL_FAMILY=<family>
+```
+
+`MIDSCENE_MODEL_FAMILY` 按服务商填(openai/anthropic/google 等),与 `MODEL_NAME` 不对应时单独调整。值从模型服务商控制台获取。
 
 ## Anti-Patterns
 
@@ -88,5 +97,6 @@ Midscene model config: copy from `tkt vision` multimodal config into `e2e/.env` 
 - [ ] `projects` array covers each frontend the user chose (or single config for single app)
 - [ ] Spec encodes auth injection / route target / backend probe if detected
 - [ ] `.gitignore` appended with e2e artifact paths
+- [ ] `e2e/.env` 四项 MIDSCENE_MODEL_* 由用户自填(不拷贝既有 CLI,无 `<...>` 占位符残留)
 - [ ] No placeholder text (`TODO`, `{{xxx}}`) remains in generated files
 - [ ] Install/test commands are exact syntax for the detected package manager
