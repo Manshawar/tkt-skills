@@ -8,7 +8,17 @@
 - 根有 `pnpm-workspace.yaml` / `lerna.json` / `turbo.json` → monorepo
 - 根有 `package.json` 但只有 `workspaces` 字段、无 dev script → monorepo
 
-单仓单前端:根 `package.json` 有 `dev`/`serve` script,`src/` 在根下。
+单仓单前端:根 `package.json` 有 dev server 脚本(**命令含 `vite` / `next dev` / `serve` 等监听端口**),`src/` 在根下。
+
+**坑**:根有 `dev` 脚本但它是**构建/CLI 命令**(`tsup --watch` / `vite build` / `tsc` / `webpack` 不带 serve)→ 不是 dev server,前端在子目录(见「单前端在子目录」)。典型:toolkit 根 `dev: tsup --watch`(CLI 构建),前端在 `web/`(`pnpm web:dev`)。
+
+## 2.5 单前端在子目录
+
+根 `dev` 是构建/CLI,而 `web/`(或 `app/` 等)子目录含 `vite.config` + 独立 dev script → 单前端在子目录,不是根。
+
+- **command**:优先根脚本里指向该子目录的(如 `web:dev` = `pnpm --dir web dev`),或子目录自己的 dev script
+- **端口**:读**该子目录的 `vite.config`**,不读根(根没有 vite.config)
+- 与「多前端」区别:只有一个前端子目录时是单前端,`projects` 数组用单元素或不用
 
 ## 2. 多前端识别
 
