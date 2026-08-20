@@ -7,7 +7,7 @@ metadata:
 
 # tkt-e2e-init
 
-IRON LAW: Detect project reality BEFORE generating anything. Never emit a generic scaffold — no hardcoded ports, no single-frontend assumption, no test that ignores login/route guards.
+IRON LAW: Detect project reality BEFORE generating anything. Never emit a generic scaffold — no hardcoded ports, no single-frontend assumption, no test that ignores login/route guards. **端口必须与被测项目对应**:读 config 端口只是起点,必须验证该端口上跑的服务确属被测前端,不能只读端口就写死。
 
 ## Workflow
 
@@ -89,6 +89,7 @@ MIDSCENE_MODEL_FAMILY=<family>
 - Do NOT assume single frontend in a monorepo — detect `projects: [...]`.
 - Do NOT emit a generic spec when the page needs login — inject auth or the run is red from the start.
 - Do NOT run install/test yourself — output commands for the user.
+- Do NOT reuse an existing dev server on a port without verifying it belongs to the project — `reuseExistingServer: true` reuses ANY service listening on that port; if another project occupies it, tests run against the wrong page (e.g. toolkit's 5173 was taken by zcode mobile, e2e ran against zcode's login page). Verify ownership before reusing.
 - Do NOT hardcode project-specific auth/storage values in this skill — detect them from the project; private/company values live in the project's local knowledge base, never in this public skill.
 
 ## Pre-Delivery Checklist
