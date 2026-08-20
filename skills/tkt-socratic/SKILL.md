@@ -1,21 +1,37 @@
 ---
 name: tkt-socratic
-description: "Post-implementation Socratic review for code changes. AI self-questions using code-adapted templates, generates 3-5 key risk points for user confirmation. Use when user says 'socratic check', 'acceptance criteria', 'tkt socratic', or invokes /tkt-socratic. Triggers: socratic, acceptance, risk, checklist, acceptance review."
+description: "Post-implementation Socratic review for code changes. AI self-questions using code-adapted templates, generates key risk points (at most 5, no padding) for user confirmation. Use when user says 'socratic check', 'acceptance criteria', 'tkt socratic', or invokes /tkt-socratic. Triggers: socratic, acceptance, risk, checklist, acceptance review."
 metadata:
   scope: global
 ---
 
 # tkt-socratic
 
-IRON LAW: Generate at most 5 key risk points. Do NOT trigger for text/comment/style-only changes.
+IRON LAW: At most 5 key risk points, **no lower bound — never pad to fill a count**. Do NOT trigger for text/comment/style-only changes.
 
-## 实质影响原则（每个风险点必须过这一关）
+## 实质影响原则（每个风险点必须连过三闸门，任何一闸不过即剔除）
 
-- 先问：**这个风险点对项目有没有实质性影响？**
-- 实质性影响 = 不改会引发问题（逻辑错 / 数据错 / 崩溃 / 下游破坏 / 性能劣化 / 安全风险），或改了有可感知收益
-- **无实质影响的不提**：改了（或没改）对实际功能、性能、可维护性、兼容性等任何方面都无差异的点，不提
-- **不能为了提问题而提问题**：凑数、刷存在感、仅风格偏好、可改可不改的点，一律剔除
-- 产出宁可少而准，不可多而废——风险点是给用户确认的，不是清单展览
+### 闸门一：现实触发
+**不改，在当前环境/当前代码路径上，具体什么输入或操作会产生失败/错误？**
+
+- 必须能写出具体触发路径（文件:行 + 场景 + 后果）
+- 只能答出「未来可能 / 换环境会 / 低概率边界 / 假如用户…… / 一旦……」这类**假设场景**的 → 剔除
+- 判据：触发条件在当前工作流里真实存在吗？不存在的场景不是风险
+
+### 闸门二：修复收益
+**改了，当前流程哪个具体场景变好？收益可感知吗？**
+
+- 必须能说出可感知收益：更快 / 更稳 / 更省 / 不挂 / 排查更快
+- 收益是「潜在 / 可改可不改 / 仅风格 / 仅可维护性讨好」的 → 剔除
+- 判据：这条不改，今天会不会有人踩到？不会 → 剔除
+
+### 闸门三：本质属性排除
+**这是缺陷，还是功能设计意图的固有属性？**
+
+- 如果换掉它反而削弱功能本质（例：真实端到端测试的固有耗时与不稳定、AI 生成的固有语义漂移），那是**设计权衡**，不是缺陷 → 剔除（或标注为「设计约束」而非风险点）
+- 判据：修了它会不会让功能偏离其本来目的？
+
+产出宁可少而准，不可多而废——风险点是给用户确认的，不是清单展览。宁缺毋滥，**0 条也合法**。
 
 ## Workflow
 
@@ -27,7 +43,7 @@ tkt-socratic Progress:
 - [ ] Step 1: Determine if review is needed ⚠️ REQUIRED
 - [ ] Step 2: Read question-templates.md
 - [ ] Step 3: Self-question against code changes
-- [ ] Step 4: Generate 3-5 key risk points
+- [ ] Step 4: Generate key risk points (at most 5)
 - [ ] Step 5: Present to user for confirmation
 ```
 
@@ -64,9 +80,9 @@ Use the six code-adapted Socratic questions:
 5. 后果与影响： "这个改动会影响哪些下游模块？"
 6. 问题与目的： "这段代码真正要解决的问题是什么？"
 
-## Step 4: Generate 3-5 Key Risk Points
+## Step 4: Generate Key Risk Points (at most 5, no lower bound)
 
-Based on self-questioning, output 3-5 concrete risk points. **每个风险点先用「实质影响原则」过滤**——无实质影响的剔除，宁缺毋滥。
+Based on self-questioning, output only the risk points that survive all three gates — **at most 5, 实质几条就几条, 0 条也合法**（0 条时直接说「无实质风险点」）。
 
 Format:
 
@@ -92,12 +108,15 @@ Ask user to check each item. Do NOT proceed to next workflow step until user con
 - Do NOT trigger for text/comment/style-only changes.
 - Do NOT modify code based on risk points without user approval.
 - Do NOT raise points with no substantive impact (style-only, cosmetic, optional refactors).
-- Do NOT pad the count to hit 3-5 — fewer real risks beats filler.
+- Do NOT raise **hypothetical scenarios** (future / env-switch / edge-case / "what if") — they fail the reality-trigger gate.
+- Do NOT flag **design-intent tradeoffs** as defects (inherent latency of real end-to-end tests, AI semantic drift) — that's a design constraint, not a risk.
+- Do NOT lower the bar to reach 3-5 items — **0 real risks beats filler**.
 
 ## Pre-Delivery Checklist
 
 - [ ] Determined if review is needed
 - [ ] Read question-templates.md
 - [ ] Self-questioned all six categories
-- [ ] Generated 3-5 risk points (not more)
+- [ ] Every risk point passed all three gates (reality-trigger / fix-benefit / design-intent)
+- [ ] Generated risk points (at most 5, no lower bound)
 - [ ] Presented to user for confirmation
