@@ -1,6 +1,6 @@
 ---
 name: visual-debug
-description: "ONLY for non-multimodal / text-only main models that cannot see images (DeepSeek deepseek-*, GLM glm-* / ChatGLM / Zhipu). Do NOT use if the current model is multimodal (Claude, GPT-4o, Gemini, Grok, Kimi vision) or can already see the attached image — look at pixels directly, do not call tkt vision. Text-only: UI reconstruction via `tkt vision inspect` then edit project code; UI debug via `tkt vision compare`. Repair loop: inspect/compare → modify code → screenshot → compare --from. Also enterprise-IM web themes with semantic tokens (`html.dark` + `var(--bg-*)` / `var(--brand)`)."
+description: "ONLY for non-multimodal / text-only main models (DeepSeek deepseek-*, GLM glm-* / ChatGLM / Zhipu) that CANNOT see images. Auto-trigger when the user sends an image/screenshot and the main model cannot view it: read/analyze the image content via `tkt vision` (multimodal sidecar). Do NOT use if multimodal (Claude, GPT-4o, Gemini, Grok, Kimi vision) — look at pixels directly. Triggers: 看图片 / 看图 / 分析截图 / 图片里是什么 / 截图内容 / 读取图片 / 这张图 / 截图分析 / report 图 / UI 截图 / 图片元素. Text-only: UI reconstruction via `tkt vision inspect` then edit code; UI debug via `tkt vision compare`; repair loop inspect/compare → modify → screenshot → compare --from."
 metadata:
   scope: global
 ---
