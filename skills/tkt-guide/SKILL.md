@@ -30,33 +30,11 @@ Read `references/workflow-index.md` to understand available scenarios.
 
 Ask: "你现在处于哪一步?"
 
-Common scenarios:
-- **新项目 / 没配过规则（无 AGENTS.md）** → 走 `tkt-rules`（初始化项目规则）
-- 需求模糊，需要澄清
-- **做方案探讨 / 方案选型 / 评估取舍** → 走 `workflow-grill.md`（方案评审）
-- 有需求，要写规格
-- 规格好了，要拆任务
-- 任务好了，要实现
-- **需求明确，直接实现（不调前期链）** → 走 `workflow-grill.md` 的「最短路径」
-- 实现完了，要验证 → `workflow-verify.md`
-- 实现完了，要验收 → `workflow-socratic.md`
-- 没思路，要 brainstorm
-- 想装某个外部 skill / plugin（如 superpowers、grill-me）→ 走 external-deps.md
+场景分类与路由映射以 `workflow-index.md` 为准，不要凭记忆猜——先问清用户落在哪个场景，再查表。
 
 ## Step 3: Read Matching Workflow Reference
 
-Based on user answer, read the matching reference file:
-
-| Scenario | Reference |
-|---|---|
-| **新项目 / 无 AGENTS.md** | `/tkt-rules` |
-| 需求模糊 / 写规格 / 拆任务 / 评审 / **方案探讨·选型·评估** | `references/workflow-grill.md` |
-| **需求明确 / 直接实现** | `references/workflow-grill.md`（最短路径，见文件开头） |
-| **实现阶段纪律** | `references/workflow-implement.md` |
-| **验证 / 测试** | `references/workflow-verify.md` |
-| **验收 / 风险审查** | `references/workflow-socratic.md` |
-| 没思路 / 重设计 | `references/workflow-superpower.md` |
-| **想装外部 skill / plugin** | `references/external-deps.md` |
+从 `workflow-index.md` 找到匹配用户答案的那一行，读对应 reference 文件。
 
 ## Step 4: Output Next-Step Command
 
