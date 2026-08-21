@@ -101,6 +101,8 @@ group / priority / desc: <group=功能域(页面+关联页面,不写冒烟/全�
 
 Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范围 `-g` 单条,不跑全量试错;红了读失败理由/截图修,重跑 ≤3 次。
 
+跑完后 **Load `references/coverage-review.md` 做覆盖率评估**(⚠️ 强制收尾):`ls e2e/midscene_run/report/` 对照 cases.json,逐条核对「该有报告的都有」。发现操作流用例无报告 = 缺口 → 补 `aiQuery`/`aiAssert` 重跑。输出 `报告覆盖率 N/M` + 缺口清单。
+
 ## Anti-Patterns
 
 - 猜 DOM/文本,不 agent-browser 探测
@@ -125,4 +127,5 @@ Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范�
 - [ ] 目录按内容(smoke/platform/manual),cases.json 已登记
 - [ ] group 是功能域(页面+关联页面),非「冒烟/回归」;priority 是质量分层(P0确定性/P1深层),非冒烟全量依据
 - [ ] 草稿经用户确认才写回
+- [ ] 跑完做覆盖率评估(`ls midscene_run/report/` 对照 cases.json),操作流缺口已补留证
 - [ ] 输出验证命令(固定范围 -g,不代跑全量)
