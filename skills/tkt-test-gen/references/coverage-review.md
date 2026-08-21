@@ -18,6 +18,8 @@
 
 **输出结论格式**:`报告覆盖率 N/M(有报告数/用例总数)` + 列出缺口用例 + 说明为什么其余无报告合理。
 
+**报告页展示(归档闭环)**:上面对照的是**源目录** `e2e/midscene_run/report/`;报告页 `/test/report` 读的是**归档** `~/.config/tkt/test/runs/<项目>/run-*/`。要报告页看得到报告,须走 `tkt test run` 平台跑(触发 writeArchive 归档),`playwright test -g` 直跑只落源目录不归档,报告页看不到(见 `whitebox-flow.md` 第 5 节)。
+
 ## 2. 踩坑记录(playwright 跑测)
 
 ### 2.1 `-g` 传含 `/` 或 `?` 的正则报诡异错误

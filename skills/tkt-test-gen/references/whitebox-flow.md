@@ -79,10 +79,10 @@ group: "测试平台"    ← /test 页 + 关联:项目扫描、搜索根目录�
 ## 5. 跑 + 修复闭环
 
 ```bash
-# 单条直跑(固定范围,不跑全部用例试错)
+# 单条直跑(固定范围,不跑全部用例试错)——报告只落源目录 e2e/midscene_run/report/,不归档
 cd <项目>/e2e && ./node_modules/.bin/playwright test <spec路径> -g "<用例名>"
 
-# 或走平台(按分组)
+# 走平台(按分组)——writeArchive 归档到 runs,报告页 /test/report 才看得到
 tkt test run <项目> -g <分组>
 ```
 
@@ -91,6 +91,8 @@ tkt test run <项目> -g <分组>
 3. 红 → 读失败理由/截图定位 → 修复
 4. 重跑同一条 ≤3
 5. 绿 → 闭环,进入提交/回归
+
+**报告闭环(生成 → 归档 → 展示)**:`playwright test -g` 直跑的报告只落 `e2e/midscene_run/report/`(源目录),**不归档**;报告页 `/test/report` 读的是归档 `~/.config/tkt/test/runs/<项目>/run-*/`。只有走 `tkt test run` 平台跑,才会 `writeArchive` 把报告 copy 进归档并挂 `report` 字段。**验证报告页能否看到报告,用 `tkt test run <项目> -g <分组>` 跑,不要用 playwright 直跑**——直跑报告页看不到,不是「没生成报告」,是「没归档」。
 
 ## 6. 分层判断
 
