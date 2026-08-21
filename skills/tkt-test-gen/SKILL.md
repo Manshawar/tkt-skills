@@ -82,7 +82,10 @@ Load `references/whitebox-flow.md`(操作流写法)+ `references/midscene-api.md
 操作流: <导航→点击→输入→发送 步骤>
 断言: <expect(...) 或 aiQuery(...) 或 aiAssert('...')>
 group / priority / desc: <group=功能域(页面+关联页面,不写冒烟/全量), priority=P0确定性/P1深层, 对齐 cases.json>
+files: <用例断言的源码 glob,如 web/src/pages/test.tsx 或 web/src/pages/*.tsx>
 ```
+
+**files 登记(diff 选例地基)**:每条用例登记它断言的源码文件 glob——改了这些文件,冒烟(diff 驱动)就跑这条用例。粒度:目录级起步(`web/src/pages/*.tsx`),断言精确文案的精确到文件(`web/src/pages/test.tsx`)。纯文档/注释不登记(无关联改动跳过)。
 
 **操作流优先,断言抓结果**:像用户一样走(点新增按钮→填输入框→发送→看结果)。关键功能用 `aiQuery` 提取数据 + `expect`(可靠 + 生成报告),不押在单一 `aiAssert` 视觉判断上(有非确定性)。确定性断言保留(快速红绿),`aiQuery`/`aiAssert` 补上留证(报告可审阅功能)。
 
@@ -95,7 +98,7 @@ group / priority / desc: <group=功能域(页面+关联页面,不写冒烟/全�
 ## Step 5: 写回 spec + cases.json
 
 - 按目录 append 到现有 spec(或按结构新建),不覆盖
-- cases.json 补 group/priority/desc,不破坏 JSON、不与现有键冲突
+- cases.json 补 group/priority/desc/files,不破坏 JSON、不与现有键冲突
 - 保持 fixture import 结构不变
 
 ## Step 6: 跑 + 修复
@@ -125,7 +128,7 @@ Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范�
 - [ ] 关键功能用 `aiQuery`+`expect` 留证(生成报告可审阅)
 - [ ] 用例不触发平台自身 run
 - [ ] 新页面功能全枚举(功能清单驱动,非想到哪测到哪)
-- [ ] 目录按内容(smoke/platform/manual),cases.json 已登记
+- [ ] 目录按内容(smoke/platform/manual),cases.json 已登记(含 files 源码 glob)
 - [ ] group 是功能域(页面+关联页面),非「冒烟/回归」;priority 是质量分层(P0确定性/P1深层),非冒烟全量依据
 - [ ] 草稿经用户确认才写回
 - [ ] 跑完做覆盖率评估(`ls midscene_run/report/` 对照 cases.json),操作流缺口已补留证

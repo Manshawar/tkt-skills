@@ -142,12 +142,12 @@ test('P1 交互', async ({ page, aiAssert }) => {
 
 ```json
 {
-  "P0 页面加载冒烟": { "group": "冒烟", "priority": "P0", "desc": "基线,每次提交必须绿" },
-  "P1 复杂交互": { "group": "回归", "priority": "P1", "desc": "依赖后端,视觉断言" }
+  "P0 页面加载冒烟": { "group": "首页", "priority": "P0", "desc": "基线,每次提交必须绿", "files": ["web/src/pages/home.tsx"] },
+  "P1 复杂交互": { "group": "首页", "priority": "P1", "desc": "依赖后端,视觉断言", "files": ["web/src/pages/*.tsx"] }
 }
 ```
 
-分组/优先级约定:冒烟 P0(每次提交必绿)、回归 P1/P2(发版前/按需)。平台 UI 按 group 展示与触发。
+约定:group=功能域(页面+关联页面,如 `首页`/`测试平台`),priority=质量分层(P0确定性/P1深层),files=用例断言的源码 glob(diff 选例地基:改了这些文件冒烟就跑这条用例)。平台 UI 按 group 展示与触发。
 
 ## .env
 
