@@ -60,7 +60,7 @@ export default defineConfig({
 })
 ```
 
-要点:`reporter` 配 `separate`(per-test 报告保留,tkt 平台挂载失败用例报告)+ `json` 固定输出 `midscene_run/last-run.json`(平台跑完读取解析)。`tkt test run` 不覆盖 reporter,直接吃 config 这份配置。
+要点:`reporter` 配 `separate`(per-test 报告保留,tkt 平台挂载用例报告——所有用例都挂,不限于失败;报告=页面操作覆盖证明)+ `json` 固定输出 `midscene_run/last-run.json`(平台跑完读取解析)。`tkt test run` 不覆盖 reporter,直接吃 config 这份配置。
 
 多前端(monorepo):用 `projects` 数组,每个前端一个 project:
 

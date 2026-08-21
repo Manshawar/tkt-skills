@@ -115,7 +115,7 @@ Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范�
 - group 用「冒烟/回归」命名(冒烟/全量是执行粒度,不是分组;group 必须是功能域)
 - 生成通用断言(「标题可见」「页面能打开」)
 - 未确认就写回 spec/cases.json
-- 报告重复堆积(跑前不清 `midscene_run/report/`)
+- 跑前手动清 `midscene_run/report/`(报告不去重不删除,文件名带时间戳天然不重名,平台归档取最新;手动清破坏历史)
 
 ## Pre-Delivery Checklist
 

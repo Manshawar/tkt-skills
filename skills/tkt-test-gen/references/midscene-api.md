@@ -39,8 +39,8 @@ await aiAssert('界面左侧有类目筛选功能')      // 验证可见状态
 
 ## 4. 报告挂载机制
 
-- midscene 每跑一条用例,在 `midscene_run/report/` 生成带用例名 HTML(separate 保留 per-test,merged 会删)
-- 平台按用例名匹配,把「终端红字」和「带截图报告」接上:`result.json` 每用例 `report` 字段 → 前端「报告」链接
+- midscene 每跑一条用例,在 `midscene_run/report/` 生成带用例名 HTML(separate 保留 per-test,merged 会删);报告不去重不删除,文件名带时间戳天然不重名
+- 平台按用例名匹配,把「终端红字」和「带截图报告」接上:`result.json` 每用例 `report` 字段(所有用例都挂报告,不限于 failed)→ 前端「报告」链接
 - 每轮结果存 `runs/<项目>/run-<ts>/result.json`,保留最近 50 轮
 
 ## 5. 其他
