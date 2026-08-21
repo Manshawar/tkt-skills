@@ -32,6 +32,8 @@
 ## 提交规范
 
 - commit message: Conventional Commits `type: 描述`, type ∈ feat/fix/refactor/style/docs/test/perf/build/ci/chore, 描述中文短句无句号
+- push 前先 pull: `git pull --rebase`
+- Gerrit 仓库(公司): 先构造 `HEAD:refs/for/<branch>` 再 push(两道:拼 ref → push);普通仓库直接 `git push`
 
 ## 副作用清理
 
