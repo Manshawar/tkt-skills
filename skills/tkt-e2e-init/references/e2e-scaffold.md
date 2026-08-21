@@ -142,12 +142,14 @@ test('P1 交互', async ({ page, aiAssert }) => {
 
 ```json
 {
-  "P0 页面加载冒烟": { "group": "首页", "priority": "P0", "desc": "基线,每次提交必须绿", "files": ["web/src/pages/home.tsx"] },
-  "P1 复杂交互": { "group": "首页", "priority": "P1", "desc": "依赖后端,视觉断言", "files": ["web/src/pages/*.tsx"] }
+  "P0 页面加载冒烟": { "group": "首页", "priority": "P0", "desc": "基线,每次提交必须绿", "files": ["web/src/pages/home.tsx"], "spec": "home.spec.ts" },
+  "P1 复杂交互": { "group": "首页", "priority": "P1", "desc": "依赖后端,视觉断言", "files": ["web/src/pages/*.tsx"], "spec": "home.spec.ts" }
 }
 ```
 
-约定:group=功能域(页面+关联页面,如 `首页`/`测试平台`),priority=质量分层(P0确定性/P1深层),files=用例断言的源码 glob(diff 选例地基:改了这些文件冒烟就跑这条用例)。平台 UI 按 group 展示与触发。
+约定:group=功能域(页面+关联页面,如 `首页`/`测试平台`),priority=质量分层(P0确定性/P1深层),files=用例断言的源码 glob(diff 选例地基:改了这些文件冒烟就跑这条用例),spec=用例所在 spec 文件名(改该 spec 文件冒烟跑该 spec 全部用例)。平台 UI 按 group 展示与触发。
+
+**存量项目回填**:已有 e2e/cases.json 但缺 `files`/`spec` 字段时,逐条回填(不重写整个文件):`files` 用源码 glob(断言精确文案精确到文件,如 `web/src/pages/home.tsx`;其余目录级 `web/src/pages/*.tsx`),`spec` 用该用例所在 spec 文件名(如 `home.spec.ts`)。纯文档/注释不登记 files。
 
 ## .env
 

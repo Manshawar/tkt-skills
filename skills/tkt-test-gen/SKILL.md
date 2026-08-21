@@ -83,9 +83,12 @@ Load `references/whitebox-flow.md`(操作流写法)+ `references/midscene-api.md
 断言: <expect(...) 或 aiQuery(...) 或 aiAssert('...')>
 group / priority / desc: <group=功能域(页面+关联页面,不写冒烟/全量), priority=P0确定性/P1深层, 对齐 cases.json>
 files: <用例断言的源码 glob,如 web/src/pages/test.tsx 或 web/src/pages/*.tsx>
+spec: <用例所在 spec 文件名,如 test-platform.spec.ts(改该 spec 文件冒烟跑该 spec 全部用例)>
 ```
 
 **files 登记(diff 选例地基)**:每条用例登记它断言的源码文件 glob——改了这些文件,冒烟(diff 驱动)就跑这条用例。粒度:目录级起步(`web/src/pages/*.tsx`),断言精确文案的精确到文件(`web/src/pages/test.tsx`)。纯文档/注释不登记(无关联改动跳过)。
+
+**spec 登记**:每条用例登记它所在的 spec 文件名(如 `test-platform.spec.ts`)——改了该 spec 文件(断言/操作流变了),冒烟跑该 spec 的全部用例。同 spec 的多条用例登记同一个 spec 值。
 
 **操作流优先,断言抓结果**:像用户一样走(点新增按钮→填输入框→发送→看结果)。关键功能用 `aiQuery` 提取数据 + `expect`(可靠 + 生成报告),不押在单一 `aiAssert` 视觉判断上(有非确定性)。确定性断言保留(快速红绿),`aiQuery`/`aiAssert` 补上留证(报告可审阅功能)。
 

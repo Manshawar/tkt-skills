@@ -99,8 +99,8 @@ MIDSCENE_MODEL_FAMILY=<family>
 - [ ] `projects` array covers each frontend the user chose (or single config for single app)
 - [ ] Spec encodes auth injection / route target / backend probe if detected
 - [ ] `.gitignore` appended with e2e artifact paths
-- [ ] 冒烟 hook 已设置:冒烟脚本(`.hooks/smoke.sh`)+ 按当前环境生成的 hook 接入(选例靠 cases.json files)
-- [ ] `cases.json` 已生成(必选):每个 spec 用例名都有分组/优先级/files 登记(平台靠它分组触发 + diff 选例)
+- [ ] 冒烟 hook 已设置:冒烟脚本(`.hooks/smoke.sh`)+ 按当前环境生成的 hook 接入(选例靠 cases.json files/spec)
+- [ ] `cases.json` 已生成(必选):每个 spec 用例名都有分组/优先级/files/spec 登记(平台靠它分组触发 + diff 选例)
 - [ ] `e2e/.env` 四项 MIDSCENE_MODEL_* 由用户自填(不拷贝既有 CLI,无 `<...>` 占位符残留)
 - [ ] No placeholder text (`TODO`, `{{xxx}}`) remains in generated files
 - [ ] Install/test commands are exact syntax for the detected package manager

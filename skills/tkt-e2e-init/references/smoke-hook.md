@@ -10,6 +10,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# cwd 无关:固定到仓库根(相对路径 cases.json / git diff 都以仓库根为基准)
+cd "$(git rev-parse --show-toplevel)"
+
 # diff 选例:staged 改动 → cases.json files glob → 用例名
 names=$(node --input-type=module -e '
 import fs from "node:fs"
@@ -60,6 +63,7 @@ AI 检测当前环境,按对应方式生成 hook,**都调上面的 smoke.sh**:
 #!/usr/bin/env bash
 command=$(jq -r '.tool_input.command // ""' 2>/dev/null || true)
 [[ "$command" == *"git commit"* ]] || exit 0
+cd "$(git rev-parse --show-toplevel)" 2>/dev/null || exit 0
 bash .hooks/smoke.sh || { echo "冒烟未通过,已阻止提交。" >&2; exit 2; }
 ```
 
@@ -82,5 +86,6 @@ bash .hooks/smoke.sh || exit 2
 
 - **脚本环境无关,hook 环境相关**:smoke.sh 只管「选例 + 跑」,hook 接入由 AI 现场检测环境生成,不写死 Claude Code / Cursor
 - **Claude Code 的 PreToolUse 只拦 Claude 的 Bash commit**,手动 `git commit` 不触发;Git 兜底则手动也拦
-- 选例靠 cases.json 的 `files`(源码 glob),改这些文件 → 冒烟跑对应用例;改 spec 命中整 spec
+- 选例靠 cases.json 的 `files`(源码 glob)+ `spec`(用例所在 spec 文件名):改 files 覆盖的源码 → 跑对应用例;改 spec 文件 → 跑该 spec 全部用例
+- **只查 staged 改动**(`git diff --cached`):commit 前必须先 `git add`;`git commit -a` 未先 add 会漏选,不拦
 - 冒烟失败 exit 非 0,hook 层转 exit 2 阻止提交,错误回传 AI 修
