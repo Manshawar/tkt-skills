@@ -37,9 +37,9 @@ group: "测试平台"    ← /test 页 + 关联:项目扫描、搜索根目录�
 ```
 
 - **group 名 = 功能域**(页面/页面集合),让「全量跑某个功能」有据可依
-- **冒烟** = 本次提交/新增功能对应的 P0 用例(diff 驱动),不单独设组
-- **全量** = 跑完某个 group 的全部用例(P0+P1)
-- **priority** 承担冒烟/全量分层:P0 = 冒烟级(确定性,提交后必跑),P1 = 全量级(aiQuery/aiAssert 深层回归)
+- **冒烟** = 本次提交/工作涉及功能的全部用例(diff 驱动,改了什么跑什么,含 P0+P1),不单独设组
+- **全量** = 跑完某个 group 的全部用例(P0+P1 累积)——多次工作叠加成的完整功能回归
+- **priority** 是用例质量分层,非冒烟/全量依据:P0 = 确定性断言(快);P1 = aiQuery/aiAssert 深层回归
 
 **判断功能域归属**:一条用例操作了哪个页面?主页面 + 跳转到的关联页面同组;跨域入口(如首页卡片导航到 /test)归「被进入的页面」的功能域。
 
@@ -65,7 +65,7 @@ group: "测试平台"    ← /test 页 + 关联:项目扫描、搜索根目录�
 - **重跑 ≤3**:失败→修复→重跑,超限停下人工判断
 - **端口隔离**:被测 web 用专用端口(strictPort)+ 最新源码;防 `reuseExistingServer` 复用旧服务/误连(5173 曾被 zcode 占,复用了别人页面)
 - **报告去重由 harness 管**:`midscene_run/report/` 每次跑完由 `e2e/scripts/cleanup-reports.ts`(playwright globalTeardown)按用例去重,每用例只留最新 1 个;tkt 平台不删源 report,只归档拷贝失败报告。新项目 init 模板应带此脚本(见 tkt-e2e-init)
-- **分组归功能域**:cases.json 的 group 是「页面+关联页面」的功能域,一组=一次全量测试;冒烟/全量是执行粒度(冒烟=本次提交 P0,全量=跑完功能域),不设成 group 名
+- **分组归功能域**:cases.json 的 group 是「页面+关联页面」的功能域,一组=一次全量测试;冒烟/全量是执行粒度(冒烟=本次提交涉及功能的全部用例,全量=跑完功能域 group),不设成 group 名
 - **综合模式在 fixture 配**:AI 操作深度/稳定性参数(`waitForNetworkIdleTimeout`/`waitAfterAction`/`replanningCycleLimit`)写 `e2e/fixture.ts`,不归 tkt 平台。判断/调法见 `midscene-api.md` 第 6 节
 - **造数据测条件性**:失败理由/报告链接等条件展示,直接造 run 数据(临时目录 + finally 清理),不真触发 run
 
