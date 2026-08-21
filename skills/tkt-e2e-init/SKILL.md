@@ -59,6 +59,7 @@ Hard rules:
 - Isolated: `e2e/` has its own `package.json` + `node_modules`; never touch the main project's dependencies.
 - Config reflects reality: `projects: [...]` per frontend, `webServer.cwd` = frontend subdir, `baseURL` = detected port.
 - Spec skeleton encodes the detected runtime: auth injection, route target, backend probe — not a generic "title is visible" assertion.
+- 设置 commit hook 冒烟:Load `references/smoke-hook.md`,按模板生成 `.claude/hooks/check-commit.sh` + 配 `.claude/settings.json` 的 PreToolUse hook(冒烟=diff 选例,Claude 提交触发,手动 git commit 不触发)。
 
 Append ignore rules to the project root `.gitignore`: `e2e/node_modules/`, `e2e/.env`, `e2e/test-results*`, `e2e/playwright-report/`, `e2e/midscene_run/`.
 
@@ -98,7 +99,8 @@ MIDSCENE_MODEL_FAMILY=<family>
 - [ ] `projects` array covers each frontend the user chose (or single config for single app)
 - [ ] Spec encodes auth injection / route target / backend probe if detected
 - [ ] `.gitignore` appended with e2e artifact paths
-- [ ] `cases.json` 已生成(必选):每个 spec 用例名都有分组/优先级登记(平台靠它分组触发)
+- [ ] 冒烟 hook 已设置:`.claude/hooks/check-commit.sh` + `.claude/settings.json` PreToolUse(选例靠 cases.json files)
+- [ ] `cases.json` 已生成(必选):每个 spec 用例名都有分组/优先级/files 登记(平台靠它分组触发 + diff 选例)
 - [ ] `e2e/.env` 四项 MIDSCENE_MODEL_* 由用户自填(不拷贝既有 CLI,无 `<...>` 占位符残留)
 - [ ] No placeholder text (`TODO`, `{{xxx}}`) remains in generated files
 - [ ] Install/test commands are exact syntax for the detected package manager
