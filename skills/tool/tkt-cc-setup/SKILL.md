@@ -1,7 +1,7 @@
 ---
 name: tkt-cc-setup
 description: "Claude Code + cc-switch 本机配置排查与一键修复。修切换供应商后底部 statusLine/claude-hud 消失、Both ANTHROPIC_AUTH_TOKEN and ANTHROPIC_API_KEY set、旧 statusline.js 盖住 HUD、美元改人民币、火山 Coding Plan 用量行、官网¥ 对照 DeepSeek 按量、套餐额度折算、百分比对不上、计费不准。Actions: 修复, 配置, 排查, 一键配置, 恢复底部栏, 换人民币, 加用量, 对官网价, 算套餐值多少, 是否省钱, doctor, apply。Objects: cc-switch, statusLine, claude-hud, arkcli, 火山, Coding Plan, DeepSeek 官网价, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_API_KEY, settings.json, common_config_claude。Triggers: ccswitch 切完底部没了, 双 token 警告, HUD 不显示, 配置底部状态栏, 美元换成人民币, 查询用量, 官网价对不上, 套餐相当于多少钱, 计费准不准, /tkt-cc-setup, 一键配 claude-hud。"
-argument-hint: [doctor|apply] [--dry-run]
+argument-hint: "[doctor|apply] [--dry-run]"
 metadata:
   scope: global
 ---
