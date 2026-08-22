@@ -76,11 +76,11 @@ function readOfficialCost() {
 function applyCost(text) {
   const official = readOfficialCost();
   if (official) {
-    const label = fmtCny(official.cny);
+    const label = `官网${fmtCny(official.cny)}`;
     if (/\$\d+\.\d{2,4}\b/.test(text)) {
       return text.replace(/\$(\d+\.\d{2,4})\b/g, label);
     }
-    return `${text.replace(/\s*$/, "")}  官网 ${label}`;
+    return `${text.replace(/\s*$/, "")}  ${label}`;
   }
   return rewriteCny(text, readUsdCny());
 }

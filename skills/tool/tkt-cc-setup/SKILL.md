@@ -1,6 +1,6 @@
 ---
 name: tkt-cc-setup
-description: "Claude Code + cc-switch 本机配置排查与一键修复。修切换供应商后底部 statusLine/claude-hud 消失、Both ANTHROPIC_AUTH_TOKEN and ANTHROPIC_API_KEY set、旧 statusline.js 盖住 HUD、美元改人民币、火山 Coding Plan 用量行。Actions: 修复, 配置, 排查, 一键配置, 恢复底部栏, 换人民币, 加用量, doctor, apply。Objects: cc-switch, statusLine, claude-hud, arkcli, 火山, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_API_KEY, settings.json, common_config_claude。Triggers: ccswitch 切完底部没了, 双 token 警告, HUD 不显示, 配置底部状态栏, 美元换成人民币, 查询用量, /tkt-cc-setup, 一键配 claude-hud。"
+description: "Claude Code + cc-switch 本机配置排查与一键修复。修切换供应商后底部 statusLine/claude-hud 消失、Both ANTHROPIC_AUTH_TOKEN and ANTHROPIC_API_KEY set、旧 statusline.js 盖住 HUD、美元改人民币、火山 Coding Plan 用量行、官网¥ 对照 DeepSeek 按量、套餐额度折算、百分比对不上、计费不准。Actions: 修复, 配置, 排查, 一键配置, 恢复底部栏, 换人民币, 加用量, 对官网价, 算套餐值多少, 是否省钱, doctor, apply。Objects: cc-switch, statusLine, claude-hud, arkcli, 火山, Coding Plan, DeepSeek 官网价, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_API_KEY, settings.json, common_config_claude。Triggers: ccswitch 切完底部没了, 双 token 警告, HUD 不显示, 配置底部状态栏, 美元换成人民币, 查询用量, 官网价对不上, 套餐相当于多少钱, 计费准不准, /tkt-cc-setup, 一键配 claude-hud。"
 argument-hint: [doctor|apply] [--dry-run]
 metadata:
   scope: global
@@ -25,7 +25,7 @@ Red Flags（出现就回到 Step 1）:
 | 为什么 / 排查 / 报错截图 | 只 doctor + 解释，不写文件 |
 | 修复 / 一键配置 / 底部没了 / 配 HUD | doctor → 展示计划 → apply |
 | 只问底部栏怎么配 | 读 `references/windows-statusline.md`，仍要写进 cc-switch 通用配置 |
-| 人民币 / 用量 / 火山余额 | 读 `references/hud-display.md`，跑 apply 同步启动器 + usage/ |
+| 人民币 / 用量 / 火山余额 / 官网价 / 套餐值多少 / 百分比对不上 / 计费不准 | 读 `references/hud-display.md`。配 HUD 才 apply；只问钱/额度则对账解释，不改配置 |
 
 `$ARGUMENTS` 含 `doctor` → 只诊断。含 `apply` / `--dry-run` → 按脚本执行。
 
@@ -64,6 +64,9 @@ Ask: 每一项是 `ok` / `warn` / `fail`？`live_command` 和 `common_command` �
 | 配过 HUD，一切换又没了 | `common_command` 仍是旧脚本或空 |
 | 成本仍是 `$` | `cny_rewrite` fail — apply 同步启动器 |
 | 火山底部没有用量行 | `usage_overlay` / `arkcli`。没装 arkcli 只 warn |
+| 用量 % 比官网大 100 倍 | `percent` 已是百分数，被 `×100`。改 `vendors/volcengine.cjs` 后清 `usage-cache` |
+| `Cost` 比 Tokens 贵约 2–3 倍 | `session-cost` 按 jsonl 行累加、没按 `message.id` 去重 |
+| 问套餐值多少 / 比官网省不省 | 读 hud-display「套餐额度折官网」。用真实 token 外推，不要套「1 折」 |
 
 Windows + Git Bash 细节：Load `references/windows-statusline.md`。  
 cc-switch 覆盖机制：Load `references/cc-switch-persist.md`。  
@@ -102,7 +105,7 @@ Ask: apply 退出码是否 0？`command` 是否含 `statusline.mjs`？`cny_rewri
 
 火山用量依赖本机 `arkcli`。不在 PATH → 用量行空，不阻塞 HUD。新厂家：只在 `scripts/hud/usage/vendors/` 加模块，再 apply。
 
-费用：DeepSeek 走官网价表 `usage/pricing/deepseek.cjs`（峰谷、元/百万 token）。Coding Plan 是套餐次数，官网 ¥ 是等价参考。价变改表，不抓网页。
+费用口径见 `references/hud-display.md`：`官网¥` ≠ 套餐账单；`percent` 不乘 100；`message.id` 去重。价变只改 `pricing/*.cjs`。
 
 双 token：apply **不改** 环境变量。注册表已净、进程还有旧 `ANTHROPIC_API_KEY` → 让用户关 Cursor 重开，或在将跑 `claude` 的终端里删掉残留 `ANTHROPIC_*`（API_KEY + 旧 BASE_URL + 旧模型名）。不要只 `unset` 一个。
 
@@ -121,6 +124,10 @@ Ask: apply 退出码是否 0？`command` 是否含 `statusline.mjs`？`cny_rewri
 - 完整打印 token / 把 key 写进 skill
 - 没跑 doctor 就手写 JSON
 - 宣称修好但用户没重开 `claude`
+- `arkcli` 的 `percent` 再乘 100，或把 percent 当 0–1 乘写死额度
+- 把 `官网¥` 说成 Coding Plan 扣费
+- 按 jsonl 行累加 usage（同一 `message.id` 会重复计费）
+- 用营销「约 1 折」代替真实 token 外推套餐价值
 
 ## Pre-Delivery Checklist
 

@@ -1,8 +1,9 @@
 /**
- * DeepSeek 官网价（元 / 百万 tokens）。
+ * DeepSeek 官网按量价（元 / 百万 tokens），用来对照 Coding Plan 是否更省。
  * 来源: https://api-docs.deepseek.com/zh-cn/quick_start/pricing
  * 高峰: 北京时间 9:00–12:00、14:00–18:00；其余为空闲（半价）。
  * 数据时间: 2026-08-17。价变改本表，不要每次刷官网。
+ * 映射：cache_read=命中；input+cache_write=未命中；output=输出（含思考）。
  */
 const PER_MILLION = {
   flash: {
@@ -18,7 +19,7 @@ const PER_MILLION = {
 function resolveFamily(model) {
   const id = String(model || "").toLowerCase();
   if (/v4-pro|deepseek-v4-pro/.test(id)) return "pro";
-  if (/v4-flash|deepseek-v4-flash/.test(id)) return "flash";
+  if (/v4-flash|deepseek-v4-flash|flash-vision/.test(id)) return "flash";
   return null;
 }
 

@@ -28,7 +28,10 @@ function copyHudOverlay(dryRun) {
   if (!fs.existsSync(localCfg)) {
     fs.copyFileSync(path.join(src, "hud-local.json"), localCfg);
   }
-  fs.cpSync(path.join(src, "usage"), path.join(dest, "usage"), { recursive: true });
+  fs.cpSync(path.join(src, "usage"), path.join(dest, "usage"), {
+    recursive: true,
+    filter: (srcPath) => !path.basename(srcPath).startsWith("_"),
+  });
   return { from: src, to: dest, copied: ["statusline.mjs", "usage/"] };
 }
 

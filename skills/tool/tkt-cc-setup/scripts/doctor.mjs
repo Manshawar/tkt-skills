@@ -70,12 +70,27 @@ add(
     ? usageIndex
     : "missing usage/index.cjs or vendors/volcengine.cjs — run apply",
 );
+const sessionText = fs.existsSync(sessionCost) ? fs.readFileSync(sessionCost, "utf8") : "";
+const volcText = fs.existsSync(volc) ? fs.readFileSync(volc, "utf8") : "";
+const priced = fs.existsSync(sessionCost) && fs.existsSync(deepseekPrice);
+const deduped = sessionText.includes("seen.has") && sessionText.includes("message.id");
 add(
   "official_pricing",
-  fs.existsSync(sessionCost) && fs.existsSync(deepseekPrice) ? "ok" : "fail",
-  fs.existsSync(sessionCost) && fs.existsSync(deepseekPrice)
-    ? "DeepSeek official CNY table + session-cost.cjs"
-    : "missing session-cost/pricing — run apply",
+  priced && deduped ? "ok" : "fail",
+  !priced
+    ? "missing session-cost/pricing — run apply"
+    : deduped
+      ? "DeepSeek official CNY + message.id dedupe"
+      : "session-cost missing message.id dedupe — 官网¥ will inflate 2–3x",
+);
+add(
+  "usage_percent_unit",
+  volcText && !/\*\s*100/.test(volcText) ? "ok" : volcText ? "fail" : "fail",
+  !volcText
+    ? "missing volcengine.cjs — run apply"
+    : /\*\s*100/.test(volcText)
+      ? "volcengine multiplies percent by 100 — official UI will disagree"
+      : "arkcli percent used as-is (already a percentage)",
 );
 
 const baseUrl = live?.env?.ANTHROPIC_BASE_URL || process.env.ANTHROPIC_BASE_URL || "";
