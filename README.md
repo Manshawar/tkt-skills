@@ -8,16 +8,27 @@
 
 ## Skill 列表
 
+按用途分两类:`skills/dev/`(开发类)、`skills/tool/`(工具类)。
+
+### 开发类 `skills/dev/`
+
 | Skill | 说明 | 作用域 |
 | --- | --- | --- |
-| [skills-cli](skills/skills-cli/SKILL.md) | `npx skills` 命令速查与判断树 — 装/更新/查/移除前先判断该用哪个命令 | global |
-| [tkt-guide](skills/tkt-guide/SKILL.md) | AI 开发工作流路由导引 — 问用户当前在哪一步,输出下一步该跑的 skill/命令 | global |
-| [tkt-rules](skills/tkt-rules/SKILL.md) | 初始化/维护项目 `AGENTS.md` + `CLAUDE.md`,渐进式披露,WHAT/WHY/HOW | project |
-| [tkt-socratic](skills/tkt-socratic/SKILL.md) | 实现后苏格拉底式复查 — 用模板自问,产出 ≤5 条实质风险点 | global |
-| [tkt-e2e-init](skills/tkt-e2e-init/SKILL.md) | AI 视觉回归测试初始化 — Midscene + Playwright 隔离 e2e/ 子项目 | project |
-| [tkt-test-gen](skills/tkt-test-gen/SKILL.md) | 根据 git diff 生成视觉回归用例 — 半自动(草稿人确认后入库) | project |
-| [tkt-sso-test](skills/tkt-sso-test/SKILL.md) | 线上部署页面测试初始化 — 后台 SSO 真实登录链,不 mock 客户端环境 | project |
-| [visual-debug](skills/visual-debug/SKILL.md) | 纯文本模型 UI 视觉侧车 — `tkt vision` 检视/比对 + 修复循环 | global |
+| [tkt-guide](skills/dev/tkt-guide/SKILL.md) | AI 开发工作流路由导引 — 问用户当前在哪一步,输出下一步该跑的 skill/命令 | global |
+| [tkt-rules](skills/dev/tkt-rules/SKILL.md) | 初始化/维护项目 `AGENTS.md` + `CLAUDE.md`,渐进式披露,WHAT/WHY/HOW | project |
+| [tkt-socratic](skills/dev/tkt-socratic/SKILL.md) | 实现后苏格拉底式复查 — 用模板自问,产出 ≤5 条实质风险点 | global |
+| [tkt-e2e-init](skills/dev/tkt-e2e-init/SKILL.md) | AI 视觉回归测试初始化 — Midscene + Playwright 隔离 e2e/ 子项目 | project |
+| [tkt-test-gen](skills/dev/tkt-test-gen/SKILL.md) | 根据 git diff 生成视觉回归用例 — 半自动(草稿人确认后入库) | project |
+| [tkt-sso-test](skills/dev/tkt-sso-test/SKILL.md) | 线上部署页面测试初始化 — 后台 SSO 真实登录链,不 mock 客户端环境 | project |
+
+### 工具类 `skills/tool/`
+
+| Skill | 说明 | 作用域 |
+| --- | --- | --- |
+| [tkt-cc-setup](skills/tool/tkt-cc-setup/SKILL.md) | Claude Code + cc-switch 本机排查/一键配置 — 底部 HUD、双 token、通用配置持久化 | global |
+| [skills-cli](skills/tool/skills-cli/SKILL.md) | `npx skills` 命令速查与判断树 — 装/更新/查/移除前先判断该用哪个命令 | global |
+| [visual-debug](skills/tool/visual-debug/SKILL.md) | 纯文本模型 UI 视觉侧车 — `tkt vision` 检视/比对 + 修复循环 | global |
+| [clash-verge-rule](skills/tool/clash-verge-rule/SKILL.md) | 管理 Clash 白名单分流规则 — 加/删规则、配常用规则、清空/列出、内网 DNS | global |
 
 ## 安装
 
@@ -49,18 +60,19 @@ npx skills add Manshawar/tkt-skills -g --skill tkt-guide
 ## 目录结构
 
 ```
-skills/<name>/SKILL.md       # skill 正本(入口)
-skills/<name>/references/    # 长文档引用,避免 SKILL.md 膨胀
-skills/<name>/templates/     # 生成模板(如 AGENTS.md)
-skills/<name>/scripts/       # 配套脚本
+skills/dev/<name>/SKILL.md   # 开发类 skill 正本(入口)
+skills/tool/<name>/SKILL.md  # 工具类 skill 正本(入口)
+skills/<cat>/<name>/references/    # 长文档引用,避免 SKILL.md 膨胀
+skills/<cat>/<name>/templates/     # 生成模板(如 AGENTS.md)
+skills/<cat>/<name>/scripts/       # 配套脚本
 ```
 
 ## 与 toolkit 的分工
 
 | 仓库 | 内容 | 安装 |
 | --- | --- | --- |
-| 本仓库 tkt-skills | 公开 skill(tkt-guide / tkt-rules / tkt-socratic / tkt-e2e-init / tkt-sso-test / visual-debug / skills-cli) | `npx skills add Manshawar/tkt-skills -g` |
-| toolkit | 私有 skill(clash-verge-rule,含公司内网/代理信息) | `npx skills add Manshawar/toolkit -g`(私有授权) |
+| 本仓库 tkt-skills | 公开 skill(tkt-guide / tkt-rules / tkt-socratic / tkt-e2e-init / tkt-sso-test / tkt-test-gen / visual-debug / skills-cli / tkt-cc-setup / clash-verge-rule) | `npx skills add Manshawar/tkt-skills -g` |
+| toolkit | 私有 skill(不再放公开类 skill) | 按需 `npx skills add Manshawar/toolkit -g`(私有授权) |
 
 ## 开发工作区
 

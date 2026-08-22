@@ -1,0 +1,127 @@
+# Clash 白名单模式常用规则模板（中国国内用户）
+# 用法：复制到 profile 的 rules: 段，或作为 rules 增强文件内容
+# 代理组名请按实际订阅修改（示例：一分机场）
+
+rules:
+  # ===== 直连：本地/局域网/内网 =====
+  - 'DOMAIN,injections.adguard.org,DIRECT'
+  - 'DOMAIN,local.adguard.org,DIRECT'
+  - 'DOMAIN-SUFFIX,local,DIRECT'
+  - 'IP-CIDR,127.0.0.0/8,DIRECT'
+  - 'IP-CIDR,10.0.0.0/8,DIRECT'
+  - 'IP-CIDR,172.16.0.0/12,DIRECT'
+  - 'IP-CIDR,192.168.0.0/16,DIRECT'
+  - 'IP-CIDR,17.0.0.0/8,DIRECT'
+  - 'IP-CIDR,100.64.0.0/10,DIRECT'
+  - 'IP-CIDR,224.0.0.0/4,DIRECT'
+  - 'IP-CIDR6,fe80::/10,DIRECT'
+
+  # ===== 直连：国内域名/IP =====
+  - 'DOMAIN-SUFFIX,cn,DIRECT'
+  - 'DOMAIN-KEYWORD,-cn,DIRECT'
+  - 'GEOIP,CN,DIRECT'
+
+  # ===== 代理：常见国外/被墙服务 =====
+  # AI
+  - 'DOMAIN-SUFFIX,openai.com,一分机场'
+  - 'DOMAIN-SUFFIX,chatgpt.com,一分机场'
+  - 'DOMAIN-SUFFIX,oaistatic.com,一分机场'
+  - 'DOMAIN-SUFFIX,oaiusercontent.com,一分机场'
+  - 'DOMAIN-SUFFIX,anthropic.com,一分机场'
+  - 'DOMAIN-SUFFIX,claude.ai,一分机场'
+  - 'DOMAIN-SUFFIX,claudeusercontent.net,一分机场'
+  - 'DOMAIN-SUFFIX,gemini.google.com,一分机场'
+  - 'DOMAIN-SUFFIX,aistudio.google.com,一分机场'
+  - 'DOMAIN-SUFFIX,perplexity.ai,一分机场'
+  - 'DOMAIN-SUFFIX,deepseek.com,一分机场'
+
+  # 搜索/社交
+  - 'DOMAIN-SUFFIX,google.com,一分机场'
+  - 'DOMAIN-SUFFIX,googleapis.com,一分机场'
+  - 'DOMAIN-SUFFIX,youtube.com,一分机场'
+  - 'DOMAIN-SUFFIX,ytimg.com,一分机场'
+  - 'DOMAIN-KEYWORD,twitter,一分机场'
+  - 'DOMAIN-SUFFIX,x.com,一分机场'
+  - 'DOMAIN-SUFFIX,facebook.com,一分机场'
+  - 'DOMAIN-SUFFIX,instagram.com,一分机场'
+  - 'DOMAIN-SUFFIX,whatsapp.com,一分机场'
+  - 'DOMAIN-SUFFIX,telegram.org,一分机场'
+  - 'DOMAIN-SUFFIX,telegra.ph,一分机场'
+  - 'DOMAIN-SUFFIX,discord.com,一分机场'
+  - 'DOMAIN-SUFFIX,discordapp.com,一分机场'
+  - 'DOMAIN-SUFFIX,reddit.com,一分机场'
+  - 'DOMAIN-SUFFIX,threads.net,一分机场'
+  - 'DOMAIN-SUFFIX,linkedin.com,一分机场'
+
+  # 开发/技术
+  - 'DOMAIN-SUFFIX,github.com,一分机场'
+  - 'DOMAIN-SUFFIX,githubusercontent.com,一分机场'
+  - 'DOMAIN-SUFFIX,gitlab.com,一分机场'
+  - 'DOMAIN-SUFFIX,npmjs.com,一分机场'
+  - 'DOMAIN-SUFFIX,stackoverflow.com,一分机场'
+  - 'DOMAIN-SUFFIX,medium.com,一分机场'
+  - 'DOMAIN-SUFFIX,dev.to,一分机场'
+  - 'DOMAIN-SUFFIX,vercel.com,一分机场'
+  - 'DOMAIN-SUFFIX,docker.com,一分机场'
+  - 'DOMAIN-SUFFIX,kubernetes.io,一分机场'
+  - 'DOMAIN-SUFFIX,rust-lang.org,一分机场'
+  - 'DOMAIN-SUFFIX,docs.rs,一分机场'
+  - 'DOMAIN-SUFFIX,crates.io,一分机场'
+  - 'DOMAIN-SUFFIX,codepen.io,一分机场'
+  - 'DOMAIN-SUFFIX,git-scm.com,一分机场'
+  - 'DOMAIN-SUFFIX,react.dev,一分机场'
+  - 'DOMAIN-SUFFIX,threejs.org,一分机场'
+  - 'DOMAIN-SUFFIX,tauri.app,一分机场'
+  - 'DOMAIN-SUFFIX,uiverse.io,一分机场'
+
+  # 流媒体
+  - 'DOMAIN-SUFFIX,netflix.com,一分机场'
+  - 'DOMAIN-SUFFIX,netflix.net,一分机场'
+  - 'DOMAIN-SUFFIX,nflxvideo.net,一分机场'
+  - 'DOMAIN-SUFFIX,disneyplus.com,一分机场'
+  - 'DOMAIN-SUFFIX,hulu.com,一分机场'
+  - 'DOMAIN-SUFFIX,max.com,一分机场'
+  - 'DOMAIN-SUFFIX,spotify.com,一分机场'
+  - 'DOMAIN-SUFFIX,soundcloud.com,一分机场'
+  - 'DOMAIN-SUFFIX,twitch.tv,一分机场'
+  - 'DOMAIN-SUFFIX,vimeo.com,一分机场'
+
+  # 新闻/知识
+  - 'DOMAIN-SUFFIX,wikipedia.org,一分机场'
+  - 'DOMAIN-SUFFIX,bbc.com,一分机场'
+  - 'DOMAIN-SUFFIX,cnn.com,一分机场'
+  - 'DOMAIN-SUFFIX,nytimes.com,一分机场'
+  - 'DOMAIN-SUFFIX,theguardian.com,一分机场'
+  - 'DOMAIN-SUFFIX,reuters.com,一分机场'
+  - 'DOMAIN-SUFFIX,bloomberg.com,一分机场'
+  - 'DOMAIN-SUFFIX,wsj.com,一分机场'
+
+  # 工具/云
+  - 'DOMAIN-SUFFIX,dropbox.com,一分机场'
+  - 'DOMAIN-SUFFIX,notion.so,一分机场'
+  - 'DOMAIN-SUFFIX,figma.com,一分机场'
+  - 'DOMAIN-SUFFIX,archive.org,一分机场'
+  - 'DOMAIN-SUFFIX,pastebin.com,一分机场'
+
+  # 游戏/创意（来自常见收藏夹）
+  - 'DOMAIN-SUFFIX,civitai.com,一分机场'
+  - 'DOMAIN-SUFFIX,civitai.red,一分机场'
+  - 'DOMAIN-SUFFIX,sketchfab.com,一分机场'
+  - 'DOMAIN-SUFFIX,nexusmods.com,一分机场'
+  - 'DOMAIN-SUFFIX,patreon.com,一分机场'
+  - 'DOMAIN-SUFFIX,gamebanana.com,一分机场'
+  - 'DOMAIN-SUFFIX,xbox.com,一分机场'
+  - 'DOMAIN-SUFFIX,steamdb.info,一分机场'
+
+  # Telegram IP 段
+  - 'IP-CIDR,91.108.4.0/22,一分机场,no-resolve'
+  - 'IP-CIDR,91.108.8.0/21,一分机场,no-resolve'
+  - 'IP-CIDR,91.108.16.0/22,一分机场,no-resolve'
+  - 'IP-CIDR,91.108.56.0/22,一分机场,no-resolve'
+  - 'IP-CIDR,149.154.160.0/20,一分机场,no-resolve'
+  - 'IP-CIDR6,2001:67c:4e8::/48,一分机场,no-resolve'
+  - 'IP-CIDR6,2001:b28:f23d::/48,一分机场,no-resolve'
+  - 'IP-CIDR6,2001:b28:f23f::/48,一分机场,no-resolve'
+
+  # ===== 兜底：未匹配全部直连 =====
+  - 'MATCH,DIRECT'
