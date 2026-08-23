@@ -14,9 +14,10 @@ IRON LAW: 用例必须像用户操作并断言可见结果,能回答「防住这
 矩阵只覆盖已选定方向。可交互点拆行(存在/操作/直达/条件展示)。基线 `toBeVisible`、别的用例前置步骤不算覆盖。缺口且无不测原因 → 入库。
 
 按需 Load(不要一次全读):
-- Step 2–3、Step 6 跑测: `references/whitebox-flow.md`
-- Step 3 留证 API: `references/midscene-api.md`
-- Step 6 跑完: `references/coverage-review.md`
+- Step 2: `references/whitebox-flow.md` §1、§2.5
+- Step 3: 同文件 §2–3 + `references/midscene-api.md` §1–3
+- Step 6 跑测: 同文件 §4–5；超时且像加载/动画未稳才读 midscene-api.md §6
+- Step 6 跑完 / 提交前: `references/coverage-review.md`
 
 ## Workflow
 
@@ -27,7 +28,7 @@ tkt-test-gen Progress:
   - [ ] 有 e2e/(playwright.config.ts + fixture.ts + cases.json)? 没有 → /tkt-e2e-init,停
 - [ ] Step 1: 收集 ⚠️ REQUIRED
   - [ ] 1.1 改动本质(有工作史先归纳;无历史才用 git 名单聚类)
-  - [ ] 1.2 用 stat 出验收选项 ⛔ 输出后停止
+  - [ ] 1.2 用 stat 出验收选项 ⛔ 未选则停止;已选则留底并继续
   - [ ] 1.2b 人选定方向 ⛔ BLOCKING
   - [ ] 1.3 只探选定路由:snapshot -i + 读代码(直达/条件展示)
 - [ ] Step 2: 对齐现有 e2e/ ⚠️ REQUIRED
@@ -35,6 +36,7 @@ tkt-test-gen Progress:
 - [ ] Step 4: 人确认入库 ⚠️ REQUIRED
 - [ ] Step 5: append spec + cases.json
 - [ ] Step 6: 代跑 -g + 修 ≤3 → Load coverage-review.md
+- [ ] Step 6b: 输出本次测试说明(测试点+期望值) ⚠️ REQUIRED(跑完或提交前)
 ```
 
 ## Step 0
@@ -88,16 +90,19 @@ agent-browser snapshot -i
 
 ## Step 2
 
-Load `references/whitebox-flow.md`。读现有 spec 的 import/命名;列出 cases.json 已有用例名/group/P0·P1,供 Step 3「已有用例」列对照。group=功能域,冒烟/全量是执行粒度,细节以该文件 §2.5 为准。
+Load `references/whitebox-flow.md` §1、§2.5。读现有 spec 的 import/命名;列出 cases.json 已有用例名/group/P0·P1,供 Step 3「已有用例」列对照。group=功能域,冒烟/全量是执行粒度。priority 只写 `P0` 或 `P1`(与 cases.json 一致)。
 
 ## Step 3
 
-Load `references/whitebox-flow.md` §2–3(矩阵/判覆盖/操作流)+ `references/midscene-api.md`(留证 API)。**矩阵规则只在 whitebox §2,此处不另写一套。** 没有矩阵禁止出草稿。
+Load `references/whitebox-flow.md` §2–3(矩阵/判覆盖/操作流)+ `references/midscene-api.md` §1–3(留证 API)。**矩阵规则只在 whitebox §2,此处不另写一套。** 没有矩阵禁止出草稿。
 
 草稿(不写回):
 
 ```
-用例名 / 防回归 / 操作流 / 断言
+用例名 / 防回归 / 操作流
+测试点: <这一条验什么>
+期望值: <操作后用户必须看见什么(文案/状态/选中/列表变化)>
+断言: <expect / aiQuery+expect / aiAssert>
 group=功能域(勿写冒烟)  priority=P0|P1
 files: 断言源码 glob(目录级或精确到文件;纯文档不登)
 spec: 所在 spec 文件名(改 spec → 冒烟跑该文件全部)
@@ -107,7 +112,7 @@ spec: 所在 spec 文件名(改 spec → 冒烟跑该文件全部)
 
 ## Step 4
 
-出示选定方向的矩阵 + 入库草稿。问:全入?删哪条?改断言?只看不写?未确认禁止写回。此处不再改方向。
+出示选定方向的矩阵 + 入库草稿(每条必须带测试点、期望值)。问:全入?删哪条?改断言?只看不写?未确认禁止写回。此处不再改方向。
 
 ## Step 5
 
@@ -124,6 +129,18 @@ Load `references/whitebox-flow.md` §4–5。自己跑,不丢命令。必须在 
 
 跑完 Load `references/coverage-review.md`:对照 **Step 3 矩阵**(不要重新全站 snapshot 当新分母)。输出功能点覆盖率 A/B + 报告覆盖率 N/M + 两份缺口。只报报告层 = 没完成。
 
+**Step 6b 本次测试说明 ⚠️ REQUIRED**(代跑结束,或用户要提交/收工、即使没再跑一遍):禁止只丢覆盖率数字或「都绿了」。按入库范围逐条交代,格式:
+
+```
+本次测试说明
+方向: <用户选定的验收方向>
+| 用例 | 测试点 | 期望值 | 结果 |
+| <名> | <验什么> | <必须看见什么> | 绿 / 红:<原因> / 未跑 |
+覆盖: 功能点 A/B · 报告 N/M
+```
+
+期望值必须是用户可见结果(文案、选中态、列表顺序、条件区块出现),不是「断言通过」。未跑也要列出测试点+期望值,结果写「未跑」。
+
 ## Anti-Patterns
 
 - 没出选项就探测/写矩阵;有工作史还先吞 git 名单;整份 `git diff` 进上下文
@@ -132,9 +149,11 @@ Load `references/whitebox-flow.md` §4–5。自己跑,不丢命令。必须在 
 - 跑前清空 `midscene_run/report/`;源 HTML 只增不删(keep=50, prune 按 mtime)
 - 用「基线已有按钮」把操作/直达踢出矩阵;group 写成冒烟/回归
 - 条件展示去点平台 run;Step 6 默认走 `tkt test run`(归档链路才用,生成代跑用 playwright `-g`)
+- 跑完/提交只报覆盖率或「都绿了」,不交代测试点与期望值
 
 ## Pre-Delivery Checklist
 
 - [ ] 选项已出且用户已选;矩阵未用基线/前置顶操作
 - [ ] 入库=缺口且无不测原因;人确认后才写回;files/spec 已登;group 是功能域
-- [ ] 已代跑;两层覆盖率已输出且缺口已补
+- [ ] 已代跑(或提交前未再跑已标明);两层覆盖率已输出且缺口已补
+- [ ] 已向用户交代本次测试说明:每条测试点 + 期望值 + 结果

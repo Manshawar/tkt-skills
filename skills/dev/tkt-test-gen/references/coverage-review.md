@@ -8,7 +8,7 @@
 
 分母 = 选定方向矩阵行数(含拆行后的操作/直达)。A < B 且缺口没有「不测原因」→ 未完成,回去补草稿。
 
-**输出**:`功能点覆盖率 A/B(已覆盖行/清单行)` + 缺口表。
+**输出**:`功能点覆盖率 A/B(已覆盖行/清单行)` + 缺口表。然后按 SKILL Step 6b 输出本次测试说明,不要只报数字。
 
 ## 2. 报告留证覆盖率
 
@@ -56,9 +56,6 @@ npx playwright test platform/test-platform.spec.ts -g "报告页点选"
 
 **规避**:`-g` 只传不含特殊字符的子串(如「切换项目后用例清单刷新」),或直接用**行号定位** `playwright test platform/x.spec.ts:65`。行号从 `--list` 输出拿。
 
-### 3.5 用例名会进工作台导航,模糊 role 会撞名
-工作台左侧 `nav button` 的 accessible name 就是用例名。`getByRole('button', { name: /返回/ })` 会同时命中顶条「← 返回」和「操作流:工作台返回报告页」。用 `exact: true` 钉死顶条文案(如 `name: '← 返回'`)。
-
 ### 3.2 用例清单恒 0 检查「选中了哪个项目」
 平台页默认选中 localStorage 记忆/第一个项目,**可能没有 e2e**(用例清单恒 0、无分组按钮)。测用例清单相关断言时,beforeEach 统一 `?project=<有用例的项目>` 显式指定,不靠默认。
 
@@ -66,4 +63,7 @@ npx playwright test platform/test-platform.spec.ts -g "报告页点选"
 项目 A 有 e2e、项目 B 无 e2e,切换前后用例数可能都是 0(或相同),`before !== after` 必挂。改断言**选中态 class 变化**(active 按钮 class 含 `bg-primary`),语义稳。
 
 ### 3.4 造数据测条件展示
-失败理由/报告链接等条件性展示,直接在归档目录写假 run 数据(`result.json` + `report/*.html`),UI 读归档展示,断言后 `finally` 清理。**不真触发平台 run**(防递归跑崩机器)。
+规则见 `whitebox-flow.md` §4「造数据测条件性」,此处不重复。
+
+### 3.5 用例名会进工作台导航,模糊 role 会撞名
+工作台左侧 `nav button` 的 accessible name 就是用例名。`getByRole('button', { name: /返回/ })` 会同时命中顶条「← 返回」和「操作流:工作台返回报告页」。用 `exact: true` 钉死顶条文案(如 `name: '← 返回'`)。

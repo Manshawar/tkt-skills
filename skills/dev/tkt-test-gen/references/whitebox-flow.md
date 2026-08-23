@@ -102,7 +102,7 @@ npx playwright test <spec路径> -g "<用例名不含 / 或 ?>"
 2. 单条 `-g` 跑(上面命令)。禁止默认走 `tkt test run`(那是归档链路,不是生成代跑)
 3. 红 → 读失败理由/截图定位 → 修复
 4. 重跑同一条 ≤3
-5. 绿 → Load `coverage-review.md`
+5. 绿 → Load `coverage-review.md`;向用户输出本次测试说明(测试点+期望值+结果,格式见 SKILL Step 6b)
 
 **报告闭环**(只在要验「报告页能打开归档」时才走):`playwright test -g` 直跑不归档;报告页读 `~/.config/tkt/test/runs/<项目>/run-*/`。验证归档才 `tkt test run <项目> -g <分组>`。不要用「直跑没归档」当理由让列表不显示工作台——功能点以页面实际展示为准。
 

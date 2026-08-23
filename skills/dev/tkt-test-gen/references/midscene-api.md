@@ -15,14 +15,14 @@
 | `aiScroll` / `aiRightClick` | 滚动 / 右键 |
 | `recordToReport('名称', {...})` | 显式留证 |
 
-**功能操作流范式**(todo-mvc 参考):
+**功能操作流范式**(locate 优先 role/css;「测试/测速」这类歧义词禁止当 tap 目标):
 ```ts
-await aiInput('Headphones', '搜索框')      // 输入
-await aiTap('搜索按钮')                     // 点击
-await aiWaitFor('搜索结果列表已加载')        // 等结果
-const items = await aiQuery('商品标题和价格') // 提取数据
-expect(items?.length).toBeGreaterThan(0)   // 断言数据
-await aiAssert('界面左侧有类目筛选功能')      // 验证可见状态
+await aiInput('Headphones', page.getByPlaceholder('搜索'))
+await aiTap(page.getByRole('button', { name: '搜索' }))
+await aiWaitFor('搜索结果列表已加载')
+const items = await aiQuery('商品标题和价格')
+expect(items?.length).toBeGreaterThan(0)
+await aiAssert('界面左侧有类目筛选功能')
 ```
 
 ## 2. aiQuery 比 aiAssert 可靠(关键教训)
