@@ -96,8 +96,11 @@ group: "测试平台"    ← /test 页 + 关联:项目扫描、搜索根目录�
 ## 5. 跑 + 修复闭环
 
 ```bash
+# 必须在 e2e/ 里跑(仓库根 npx playwright = 两份 @playwright/test,假报 beforeEach + No tests found)
 # 单条直跑(固定范围,不跑全部用例试错)——报告只落源目录 e2e/midscene_run/report/,不归档
-cd <项目>/e2e && ./node_modules/.bin/playwright test <spec路径> -g "<用例名>"
+cd <项目>/e2e
+npx playwright test <spec路径> -g "<用例名不含 / 或 ?>"
+# 或仓库根: pnpm --dir e2e exec playwright test <spec路径> -g "<用例名>"
 
 # 走平台(按分组)——writeArchive 归档到 runs,报告页 /test/report 才看得到
 tkt test run <项目> -g <分组>

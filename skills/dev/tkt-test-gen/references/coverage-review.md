@@ -44,6 +44,23 @@
 
 ## 3. 踩坑记录(playwright 跑测)
 
+### 3.0 必须在 `e2e/` 里跑,仓库根 `npx playwright` 会假报 beforeEach
+e2e 是隔离子工程(自己的 `package.json` / `node_modules` / `playwright.config.ts`)。在**仓库根**跑 `npx playwright test platform/...` 会打到根目录那份 `@playwright/test`(若根 `package.json` 也声明了它),而 spec 的 `test` 来自 `e2e/fixture.ts` → 两份 Playwright,报:
+
+- `did not expect test.beforeEach() to be called here`(指向 spec 的 `test.beforeEach`)
+- 紧跟 `Error: No tests found`
+
+这不是 spec 坏了,也不是 `-g` 没命中。`--list` 在 `e2e/` 下仍能收集。
+
+**规避**(Windows 同样):
+
+```bash
+cd e2e
+npx playwright test platform/test-platform.spec.ts -g "报告页点选"
+```
+
+或在仓库根:`pnpm --dir e2e exec playwright test platform/test-platform.spec.ts -g "报告页点选"`
+
 ### 3.1 `-g` 传含 `/` 或 `?` 的正则报诡异错误
 用例名带特殊字符(如「进入 /test」「?project=」)时,`playwright test -g "..."` 会报:
 - `Error: No tests found` + 顺带一个误导性的 `did not expect test.beforeEach() to be called here`
