@@ -212,8 +212,8 @@ spec: <用例所在 spec 文件名,如 test-platform.spec.ts(改该 spec 文件�
 - 生成通用断言(「标题可见」「页面能打开」)
 - 未确认就写回 spec/cases.json
 - 把整份 `git diff` 当收集材料(token 贵,范围被文件清单带跑)
-- 跑前一把清空 `midscene_run/report/`(破坏本轮对照);源报告超 100 由 prune 按 mtime 删最旧,不是手清
-- 源报告只增不删(会堆过百份 HTML)
+- 跑前一把清空 `midscene_run/report/`(破坏本轮对照);源报告超 50 由 prune 按 mtime 删最旧,不是手清
+- 源报告只增不删(每份约 3MB,堆过 50 就上百 MB)
 
 ## Pre-Delivery Checklist
 
