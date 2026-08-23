@@ -75,6 +75,8 @@ group: "测试平台"    ← /test 页 + 关联:项目扫描、搜索根目录�
 - **分组归功能域**:cases.json 的 group 是「页面+关联页面」的功能域,一组=一次全量测试;冒烟/全量是执行粒度(冒烟=本次提交涉及功能的全部用例,全量=跑完功能域 group),不设成 group 名
 - **综合模式在 fixture 配**:AI 操作深度/稳定性参数(`waitForNetworkIdleTimeout`/`waitAfterAction`/`replanningCycleLimit`)写 `e2e/fixture.ts`,不归 tkt 平台。判断/调法见 `midscene-api.md` 第 6 节
 - **造数据测条件性**:失败理由/报告链接等条件展示,直接造 run 数据(临时目录 + finally 清理),不真触发 run
+- **Windows 路径归一化**:路径类输入被 `path.resolve` 归一化(带盘符,`/tmp/x` → `E:\tmp\x`)。断言用 `os.tmpdir()` + **唯一尾段**匹配(`hasText: 'marker-name'`),别写死 `/tmp/...` 或全路径;marker 路径变量与断言文本分开(归一化后的盘符路径 ≠ 你输入的字符串)
+- **数据依赖用例 ≠ 回归**:断言具体项目/历史数据(如 `zcode` 按钮、最新一轮 Badge、报告 iframe)的用例,依赖**登记项目 + 历史 run**;环境里没有就挂,这是环境不是代码回归。平台用例(P1 依赖数据)失败先查「搜索根有没有这个项目」「有没有历史报告」,别当 UI bug 改断言。临时验证可用平台 API 加搜索根(`POST /api/test/config {action:'add', dir}`),测完还原
 
 ## 5. 跑 + 修复闭环
 

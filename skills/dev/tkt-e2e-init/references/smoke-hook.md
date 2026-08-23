@@ -61,7 +61,15 @@ AI 检测当前环境,按对应方式生成 hook,**都调上面的 smoke.sh**:
 `.claude/hooks/check-commit.sh`(判断是否 commit → 调 smoke):
 ```bash
 #!/usr/bin/env bash
-command=$(jq -r '.tool_input.command // ""' 2>/dev/null || true)
+# ⚠️ 不要用 jq 解析 stdin:环境缺 jq 时 command 恒空 → 永远 exit 0 → 冒烟静默失效(已踩坑)
+command=$(node -e '
+let s = ""
+process.stdin.on("data", (c) => (s += c))
+process.stdin.on("end", () => {
+  try { process.stdout.write(JSON.parse(s).tool_input?.command ?? "") }
+  catch { process.exit(0) }
+})
+' 2>/dev/null || true)
 [[ "$command" == *"git commit"* ]] || exit 0
 cd "$(git rev-parse --show-toplevel)" 2>/dev/null || exit 0
 bash .hooks/smoke.sh || { echo "冒烟未通过,已阻止提交。" >&2; exit 2; }
@@ -89,3 +97,13 @@ bash .hooks/smoke.sh || exit 2
 - 选例靠 cases.json 的 `files`(源码 glob)+ `spec`(用例所在 spec 文件名):改 files 覆盖的源码 → 跑对应用例;改 spec 文件 → 跑该 spec 全部用例
 - **只查 staged 改动**(`git diff --cached`):commit 前必须先 `git add`;`git commit -a` 未先 add 会漏选,不拦
 - 冒烟失败 exit 非 0,hook 层转 exit 2 阻止提交,错误回传 AI 修
+
+## 静默失效警告(必读)
+
+hook 链路里任何一环依赖环境里**不存在的工具**(如 jq),失败被 `2>/dev/null` / `|| true` 吞掉 → gate 永远放行,UI 改动从此不跑 e2e。toolkit 曾因此长期空转(jq 缺失,command 恒空,smoke.sh 从未运行)。
+
+**验证纪律**:改冒烟脚本 / hook 后,必须**实测整链真触发**——
+1. `git add` 一个会被 cases.json files 命中的文件
+2. 跑 hook 入口(`echo '{"tool_input":{"command":"git commit -m t"}}' | bash .claude/hooks/check-commit.sh`)
+3. 确认 playwright 真的被调用并跑对应用例(不是「无关联改动跳过」也不是 exit 0 静默)
+只看脚本 exit 0 不算验证——空转也 exit 0。

@@ -80,6 +80,7 @@ export default defineConfig({
 要点:
 
 - `webServer.cwd` = 前端子目录(启动命令在子目录执行),不是项目根 —— monorepo 根跑 `pnpm dev` 必失败
+- **ESM config 下没有 `__dirname`**:config 用 `import` 语法(ESM)时 `__dirname is not defined in ES module scope` 会崩。cwd 用 `path.resolve(import.meta.dirname, '..')`(Node 20.11+),别硬编码 mac 风格绝对路径(如 `/Users/xxx/...`),跨平台会失效
 - `workers: 1`(Midscene 视觉断言串行,防并发打爆模型)
 - `reuseExistingServer: true`:已在跑则复用,没跑则 playwright 起、跑完收
 
