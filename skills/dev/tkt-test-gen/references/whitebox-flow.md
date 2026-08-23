@@ -21,15 +21,13 @@ e2e/
 
 ## 2. 功能清单驱动(先定验收方向,再枚举)
 
-**人选定验收方向 → 只对选定方向枚举 → 矩阵核对 → 缺的补测试。** 不是「diff 扫到的页全部重测」,也不是「测试绿了就算完成」。
+选定方向内枚举 → 矩阵核对 → 补缺口。改动本质/选项门见 SKILL Step 1。
 
-改动本质:**本轮对话/工作史能归纳就先归纳**;git `--stat` 只核对夹带。没有历史才用 `status` + `stat` 聚类。
+已有路由大改按新页面处理——**用户把该页选进方向**才整页重枚举。全站换 token 默认「切换 + 抽检」。
 
-已有路由大改(重构布局、加排序/详情/工作台)按新页面处理,不能只给旧页补一条基线——**前提是用户把该页选进了验收方向**。全站 token/主题换色扫了很多文件,默认只测「切换 + 抽检」,不自动整页重测被扫到的旧操作流。
+枚举来源:读代码 + agent-browser `snapshot -i`。只探选定方向的路由(含该方向关联页)。直达参数和条件渲染必须读源码,snapshot 没有。
 
-枚举来源:读代码 + agent-browser `snapshot -i` 列出选定方向上的可交互元素(按钮/输入/链接/切换/条件性展示)。只探选定方向的路由(含该方向的关联页)。
-
-输出矩阵再写用例:
+输出矩阵再写用例(Step 3 完成门,没有矩阵禁止出草稿):
 
 ```
 功能点 | 类型(存在/操作/直达/条件展示) | 页面 | 已有用例 | 缺口/不测原因
@@ -76,10 +74,7 @@ group: "测试平台"    ← /test 页 + 关联:项目扫描、搜索根目录�
 - `aiQuery` + `expect` —— 提取结构化数据(列表/文本),可靠 + 生成报告
 - `aiAssert` —— 视觉判断(布局/遮挡/可读性),留证
 
-**留证判定(硬规则,逐条过)**:「这条用例有『操作』吗?」有 → 必须留证;只是「读数据看结果」→ expect 够。
-- 操作流(导航/点击/切换/输入):操作后加 `aiQuery`(提取结果+expect)或 `aiAssert`(视觉),生成带截图报告——绿了要能审阅过程
-- 数据渲染/条件展示(列表/历史/状态):纯 `expect`,无报告合理
-- P0 确定性基线(标题/卡片/按钮存在):纯 `expect`
+**留证**:有操作必须留证;只读数据 `expect` 够。API 与口诀见 `midscene-api.md` §2–3,不要在用例里用自然语言 `aiTap` 猜「测试/测速」。
 
 ## 4. 硬约束(踩坑沉淀)
 
@@ -87,34 +82,29 @@ group: "测试平台"    ← /test 页 + 关联:项目扫描、搜索根目录�
 - **固定范围**:跑测试用 `-g` 过滤一条/一组,不跑全部用例试错
 - **重跑 ≤3**:失败→修复→重跑,超限停下人工判断
 - **端口隔离**:被测 web 用专用端口(strictPort)+ 最新源码;防 `reuseExistingServer` 复用旧服务/误连(5173 曾被 zcode 占,复用了别人页面)
-- **源报告上限 50,按 mtime 删最旧**:`midscene_run/report/` 统一落 HTML,文件名带时间戳不重名。midscene 自己不清理;平台归档拷贝最新一份后,`pruneSourceReports` 把源 HTML 剪到 50。直跑靠 playwright reporter `onEnd`(排在 midscene 后面)同样剪。**不挂 globalTeardown 去重**(曾与 finalize 抢时序误删)。禁止跑前一把清空。归档 run 仍 `pruneRuns keep=50`。
-- **分组归功能域**:cases.json 的 group 是「页面+关联页面」的功能域,一组=一次全量测试;冒烟/全量是执行粒度(冒烟=本次提交涉及功能的全部用例,全量=跑完功能域 group),不设成 group 名
-- **综合模式在 fixture 配**:AI 操作深度/稳定性参数(`waitForNetworkIdleTimeout`/`waitAfterAction`/`replanningCycleLimit`)写 `e2e/fixture.ts`,不归 tkt 平台。判断/调法见 `midscene-api.md` 第 6 节
+- **源报告 keep=50**:finalize 后按 mtime 剪;直跑用排在 midscene 后的 reporter。禁止 teardown 抢删、禁止跑前清空。归档轮次 `pruneRuns keep=50`。细则见 midscene-api.md §4。
+- **综合模式**:参数写 `e2e/fixture.ts`,见 midscene-api.md §6。不写进平台代码。
 - **造数据测条件性**:失败理由/报告链接等条件展示,直接造 run 数据(临时目录 + finally 清理),不真触发 run
 - **Windows 路径归一化**:路径类输入被 `path.resolve` 归一化(带盘符,`/tmp/x` → `E:\tmp\x`)。断言用 `os.tmpdir()` + **唯一尾段**匹配(`hasText: 'marker-name'`),别写死 `/tmp/...` 或全路径;marker 路径变量与断言文本分开(归一化后的盘符路径 ≠ 你输入的字符串)
 - **数据依赖用例 ≠ 回归**:断言具体项目/历史数据(如 `zcode` 按钮、最新一轮 Badge、报告 iframe)的用例,依赖**登记项目 + 历史 run**;环境里没有就挂,这是环境不是代码回归。平台用例(P1 依赖数据)失败先查「搜索根有没有这个项目」「有没有历史报告」,别当 UI bug 改断言。临时验证可用平台 API 加搜索根(`POST /api/test/config {action:'add', dir}`),测完还原
-- **平台 run 调 playwright 跨平台(Windows 已踩三重坑)**:runner spawn `node_modules/.bin/playwright` 在 Windows 上一路 ENOENT(无扩展 POSIX shim)→ 换 `.CMD` 后 spawn EINVAL(必须 shell)→ shell:true 后 `-g "A|B"` 里的 `|` 被 shell 当管道符,命令截断 0 秒退出。**正解:不用 .bin、不用 shell,spawn 当前 node 直调 `node_modules/@playwright/test/cli.js`**(`spawn(process.execPath, [cliJs, ...args], { cwd: e2eDir })`),跨平台一致无拼接问题。跑完 0✓0✘/0 秒退出先怀疑 spawn 方式,手动在 e2e/ 直跑 playwright 对比选例是否正常
 
 ## 5. 跑 + 修复闭环
 
 ```bash
 # 必须在 e2e/ 里跑(仓库根 npx playwright = 两份 @playwright/test,假报 beforeEach + No tests found)
-# 单条直跑(固定范围,不跑全部用例试错)——报告只落源目录 e2e/midscene_run/report/,不归档
+# 生成后的代跑默认走这条:固定范围,报告只落 e2e/midscene_run/report/,不归档
 cd <项目>/e2e
 npx playwright test <spec路径> -g "<用例名不含 / 或 ?>"
 # 或仓库根: pnpm --dir e2e exec playwright test <spec路径> -g "<用例名>"
-
-# 走平台(按分组)——writeArchive 归档到 runs,报告页 /test/report 才看得到
-tkt test run <项目> -g <分组>
 ```
 
 1. 隔离端口起被测服务(最新源码)
-2. 单条 `-g` 跑(上面命令)
+2. 单条 `-g` 跑(上面命令)。禁止默认走 `tkt test run`(那是归档链路,不是生成代跑)
 3. 红 → 读失败理由/截图定位 → 修复
 4. 重跑同一条 ≤3
-5. 绿 → 闭环,进入提交/回归
+5. 绿 → Load `coverage-review.md`
 
-**报告闭环(生成 → 归档 → 展示)**:`playwright test -g` 直跑的报告只落 `e2e/midscene_run/report/`(源目录),**不归档**;报告页 `/test/report` 读归档 `~/.config/tkt/test/runs/<项目>/run-*/`,并应按用例名把源目录报告挂到对应测试点。只有走 `tkt test run` 才会 `writeArchive`。**不要用「直跑没归档」当理由让列表不显示工作台**——功能点以页面实际展示为准。验证归档链路仍用 `tkt test run <项目> -g <分组>`。
+**报告闭环**(只在要验「报告页能打开归档」时才走):`playwright test -g` 直跑不归档;报告页读 `~/.config/tkt/test/runs/<项目>/run-*/`。验证归档才 `tkt test run <项目> -g <分组>`。不要用「直跑没归档」当理由让列表不显示工作台——功能点以页面实际展示为准。
 
 ## 6. 分层判断
 
