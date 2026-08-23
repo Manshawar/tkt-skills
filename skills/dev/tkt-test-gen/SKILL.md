@@ -135,9 +135,18 @@ spec: <用例所在 spec 文件名,如 test-platform.spec.ts(改该 spec 文件�
 - cases.json 补 group/priority/desc/files,不破坏 JSON、不与现有键冲突
 - 保持 fixture import 结构不变
 
-## Step 6: 跑 + 修复
+## Step 6: 跑 + 修复(agent 代跑,不要丢命令给用户)
 
-Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范围 `-g` 单条,不跑全部用例试错;红了读失败理由/截图修,重跑 ≤3 次。
+写回后 **自己跑完**,不要只输出验证命令等人执行。Load `references/whitebox-flow.md`「跑 + 修复」。
+
+**cwd 铁律**:在 `<项目>/e2e/` 执行(或仓库根 `pnpm --dir e2e exec playwright test ...`)。仓库根 `npx playwright` 会打到另一份 `@playwright/test`,假报 `beforeEach` + `No tests found`(coverage-review 3.0)。
+
+**跑哪些**:
+- 默认:只跑本次入库范围。`-g` 用不含 `/` `?` 的子串;多条可用 `-g "A|B|C"`(PowerShell 务必给 grep 加引号)
+- 用户明确说「全跑完 / 验收 / 跑这个 spec」→ 跑该 spec 整文件(`playwright test platform/foo.spec.ts`),仍禁止点 UI「冒烟/全量/分组」
+- 禁止:没被要求就无过滤全仓库试错;禁止点平台 run 按钮(会死循环)
+
+红了读失败理由/截图修,同一条重跑 ≤3 次。
 
 跑完后 **Load `references/coverage-review.md` 做两层覆盖率评估**(⚠️ 强制收尾):
 1. **功能点覆盖率**:snapshot 清单 × cases.json(矩阵缺口=没完成)
@@ -152,7 +161,8 @@ Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范�
 - 关键功能押在单一 `aiAssert` 视觉判断(非确定性),不用 `aiQuery`+`expect`
 - 操作流用例纯 `expect` 不 `aiQuery`/`aiAssert` 留证(绿了但过程不可审阅)
 - **用例触发平台自身 run(点冒烟/全量/分组),死循环跑崩机器**
-- 跑全部用例试错,不固定范围 `-g`
+- 只丢验证命令不代跑;或没被要求就无过滤全仓库试错
+- 在仓库根 `npx playwright`(两份 @playwright/test,假报 beforeEach)
 - 测试绿了就以为完成,不核对「功能清单全枚举」
 - **用报告覆盖率代替功能点覆盖率**(midscene HTML 齐了,但排序/点选/直达/工作台等可交互点没有用例)
 - **已有页面重构只补基线**(「标题可见」顶整页;Step 3.1 写「新页面才全枚举」)
@@ -176,4 +186,4 @@ Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范�
 - [ ] 目录按内容(smoke/platform/manual),cases.json 已登记(含 files 源码 glob)
 - [ ] group 是功能域(页面+关联页面),非「冒烟/回归」;priority 是质量分层(P0确定性/P1深层),非冒烟全量依据
 - [ ] 跑完做两层覆盖率:功能点矩阵 + 报告留证(`ls midscene_run/report/` 对照 cases.json),两层缺口已补
-- [ ] 输出验证命令(固定范围 -g,不代跑全部用例)
+- [ ] 已在 e2e/ 代跑入库范围(或用户要求的全量),两层覆盖率已输出

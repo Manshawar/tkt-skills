@@ -68,6 +68,9 @@ npx playwright test platform/test-platform.spec.ts -g "报告页点选"
 
 **规避**:`-g` 只传不含特殊字符的子串(如「切换项目后用例清单刷新」),或直接用**行号定位** `playwright test platform/x.spec.ts:65`。行号从 `--list` 输出拿。
 
+### 3.5 用例名会进工作台导航,模糊 role 会撞名
+工作台左侧 `nav button` 的 accessible name 就是用例名。`getByRole('button', { name: /返回/ })` 会同时命中顶条「← 返回」和「操作流:工作台返回报告页」。用 `exact: true` 钉死顶条文案(如 `name: '← 返回'`)。
+
 ### 3.2 用例清单恒 0 检查「选中了哪个项目」
 平台页默认选中 localStorage 记忆/第一个项目,**可能没有 e2e**(用例清单恒 0、无分组按钮)。测用例清单相关断言时,beforeEach 统一 `?project=<有用例的项目>` 显式指定,不靠默认。
 
