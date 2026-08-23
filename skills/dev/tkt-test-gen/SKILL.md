@@ -9,6 +9,8 @@ metadata:
 
 IRON LAW: 生成的用例必须「像用户一样操作,验证用户可见结果」——能回答「它防住这次改动的哪个回归 / 验证哪个功能」。与改动无关的通用断言(「标题可见」「页面能打开」)是废品。草稿必须人确认后才写回 spec/cases.json。**用例禁止触发平台自身 run(点「冒烟/全量/分组」按钮),会死循环跑崩机器。**
 
+**功能点矩阵是完成门,报告留证不是。** 探测到的每个可交互点(按钮/链接/输入/切换/条件性展示)必须在 cases.json 有对应测试点,不测的写原因。已有页面重构/加交互 = 当新页面重枚举,不能只补一条基线。`覆盖率` 先看功能点,再看 midscene 报告留证;只报「报告覆盖率 N/M」而矩阵有缺口 = 没完成。
+
 ## Workflow
 
 Copy this checklist and check off items as you complete them:
@@ -22,16 +24,16 @@ tkt-test-gen Progress:
 - [ ] Step 1: 收集(读代码 + agent-browser 探测)⚠️ REQUIRED
   - [ ] 1.1 确定改动范围(未提交/暂存/指定 commit)
   - [ ] 1.2 提炼「用户可见的变化」:改了哪个组件/页面/交互
-  - [ ] 1.3 agent-browser 打开目标页 snapshot -i 探测真实元素(按钮/href/输入框/标题/状态)
+  - [ ] 1.3 agent-browser 打开目标页 snapshot -i:产出①稳定定位 ②功能点清单(每个可交互元素一行)
 - [ ] Step 2: 读项目现有 e2e/ 对齐风格 ⚠️ REQUIRED
   - [ ] 2.1 读现有 spec,对齐 fixture import、命名、目录结构(smoke/platform/manual)
   - [ ] 2.2 读 cases.json,对齐 group(功能域)与 priority(质量分层 P0/P1)
 - [ ] Step 3: 判断影响面 + 生成草稿 ⚠️ REQUIRED
-  - [ ] 3.1 列出受影响页面/交互(新页面 → 枚举全部功能点)
+  - [ ] 3.1 功能点矩阵(新页面 **和** 已有页重构/加交互都要):snapshot 清单 × cases.json,缺的补草稿,不测的写原因
   - [ ] 3.2 每条草稿写「防哪个回归/验证哪个功能」+ 操作流 + 断言(不写回)
 - [ ] Step 4: 人确认草稿 ⚠️ REQUIRED
 - [ ] Step 5: 写回 spec + cases.json(按目录,append 不覆盖)
-- [ ] Step 6: 跑(固定范围 -g 单条/一组)+ 修复(≤3)→ 再测
+- [ ] Step 6: 跑(固定范围 -g)+ 修复(≤3)→ 两层覆盖率(功能点矩阵 + 报告留证)
 ```
 
 ## Step 0: 前置检查 e2e/ ⚠️ REQUIRED
@@ -56,7 +58,11 @@ agent-browser open <url>          # 打开被测页
 agent-browser snapshot -i          # 拿真实元素(按钮文案/href/输入框占位/标题/状态)
 ```
 
-**探测产出 = 稳定定位依据**。断言只建立在探测到的元素上,探测不到/不确定就标记待探测,不猜。教训:`aiTap('"测试" 工具卡片')` 会误点「测速」(文本歧义);改 `a[href="/test"]` 稳定定位一次通过。
+**探测产出两份,缺一不可**:
+1. **稳定定位依据** —— 断言只建立在探测到的元素上,探测不到/不确定就标记待探测,不猜。教训:`aiTap('"测试" 工具卡片')` 会误点「测速」(文本歧义);改 `a[href="/test"]` 稳定定位一次通过。
+2. **功能点清单** —— snapshot 里每个可交互元素一行(按钮/链接/输入/切换/条件性展示如「工作台」)。这份清单拿去 Step 3.1 跟 cases.json 打矩阵,不是只给已经打算写的那几条当选择器。
+
+受影响的每个路由都要探测(如 `/test` + `/test/report` + `/test/report/full`),不要只探 diff 里改过的那一个文件对应的「主页」。
 
 ## Step 2: 读项目现有 e2e/ 对齐 ⚠️ REQUIRED
 
@@ -73,6 +79,17 @@ Load `references/whitebox-flow.md` for 目录结构、功能清单驱动、断�
 ## Step 3: 生成草稿 ⚠️ REQUIRED
 
 Load `references/whitebox-flow.md`(操作流写法)+ `references/midscene-api.md`(API 全貌 + 留证)。
+
+**3.1 功能点矩阵(完成门,先于写草稿)**:把 Step 1.3 的功能点清单和现有 cases.json 逐行对照,输出表:
+
+```
+功能点 | 页面 | 已有用例 | 缺口/不测原因
+```
+
+- **新页面、已有页重构、加交互,规则相同**:整页(含关联路由)重枚举,不能只测 diff 里那一块、也不能用一条「标题可见」顶整页。
+- 每个可交互点要么有用例,要么写不测原因(防递归点冒烟/全量、纯装饰、环境数据依赖且已标注)。
+- 「按钮在不点」只覆盖**存在**;若用户能点出不同结果(排序切换、点选详情、打开工作台),必须另有操作流用例。
+- 矩阵有缺口才进入 3.2 写草稿;没有矩阵就生成草稿 = 违规。
 
 每条草稿格式(不写回):
 
@@ -108,7 +125,11 @@ spec: <用例所在 spec 文件名,如 test-platform.spec.ts(改该 spec 文件�
 
 Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范围 `-g` 单条,不跑全部用例试错;红了读失败理由/截图修,重跑 ≤3 次。
 
-跑完后 **Load `references/coverage-review.md` 做覆盖率评估**(⚠️ 强制收尾):`ls e2e/midscene_run/report/` 对照 cases.json,逐条核对「该有报告的都有」。发现操作流用例无报告 = 缺口 → 补 `aiQuery`/`aiAssert` 重跑。输出 `报告覆盖率 N/M` + 缺口清单。
+跑完后 **Load `references/coverage-review.md` 做两层覆盖率评估**(⚠️ 强制收尾):
+1. **功能点覆盖率**:snapshot 清单 × cases.json(矩阵缺口=没完成)
+2. **报告覆盖率**:`ls e2e/midscene_run/report/` 对照 cases.json,操作流该有报告的都有
+
+只报报告覆盖率、跳过功能点矩阵 = 没完成。发现操作流用例无报告 = 留证缺口 → 补 `aiQuery`/`aiAssert` 重跑。输出 `功能点覆盖率 A/B` + `报告覆盖率 N/M` + 两份缺口清单。
 
 ## Anti-Patterns
 
@@ -119,6 +140,9 @@ Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范�
 - **用例触发平台自身 run(点冒烟/全量/分组),死循环跑崩机器**
 - 跑全部用例试错,不固定范围 `-g`
 - 测试绿了就以为完成,不核对「功能清单全枚举」
+- **用报告覆盖率代替功能点覆盖率**(midscene HTML 齐了,但排序/点选/直达/工作台等可交互点没有用例)
+- **已有页面重构只补基线**(「标题可见」顶整页;Step 3.1 写「新页面才全枚举」)
+- snapshot 只当选择器、不当覆盖清单(探测了但不拿来跟 cases.json 打矩阵)
 - group 用「冒烟/回归」命名(冒烟/全量是执行粒度,不是分组;group 必须是功能域)
 - 生成通用断言(「标题可见」「页面能打开」)
 - 未确认就写回 spec/cases.json
@@ -130,9 +154,9 @@ Load `references/whitebox-flow.md` 的「跑 + 修复」节。核心:固定范�
 - [ ] 白盒定位(稳定选择器),非 AI 猜文本
 - [ ] 关键功能用 `aiQuery`+`expect` 留证(生成报告可审阅)
 - [ ] 用例不触发平台自身 run
-- [ ] 新页面功能全枚举(功能清单驱动,非想到哪测到哪)
+- [ ] 新页面 **和已有页重构/加交互** 都功能全枚举(功能清单驱动;输出功能点矩阵)
 - [ ] 目录按内容(smoke/platform/manual),cases.json 已登记(含 files 源码 glob)
 - [ ] group 是功能域(页面+关联页面),非「冒烟/回归」;priority 是质量分层(P0确定性/P1深层),非冒烟全量依据
 - [ ] 草稿经用户确认才写回
-- [ ] 跑完做覆盖率评估(`ls midscene_run/report/` 对照 cases.json),操作流缺口已补留证
+- [ ] 跑完做两层覆盖率:功能点矩阵 + 报告留证(`ls midscene_run/report/` 对照 cases.json),两层缺口已补
 - [ ] 输出验证命令(固定范围 -g,不代跑全部用例)
