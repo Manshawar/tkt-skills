@@ -52,10 +52,18 @@ tkt-test-gen Progress:
 
 ## Step 1: 收集(读代码 + 探测)⚠️ REQUIRED
 
-先读改动,再**用 agent-browser 探测真实页面**,不猜。
+先列改动大纲,再探测。**禁止把整份 `git diff` 塞进上下文**(大 diff 吃 token,还会把验收范围带偏)。
 
-读 diff 回答三个问题:
-1. **改了哪些文件** —— 组件/页面/样式/逻辑?
+**1.1 大纲(只要名单,不要全文)**:
+```
+git status --short
+git diff --stat
+git diff --name-only
+```
+三份输出足够聚类出验收选项。选定方向之后,才对那几个路径 `git diff -- <file>` / 读文件。未选方向的文件不读。
+
+读完名单回答三个问题:
+1. **改了哪些文件** —— 组件/页面/样式/逻辑?(来自 `--name-only`,不是通读)
 2. **改动本质** —— 修 bug、加功能、调样式、改交互? **按本质聚类,不按文件清单摊开。**
 3. **渲染结果变在哪** —— 用户打开页面后哪里不一样了?
 
@@ -203,7 +211,9 @@ spec: <用例所在 spec 文件名,如 test-platform.spec.ts(改该 spec 文件�
 - group 用「冒烟/回归」命名(冒烟/全量是执行粒度,不是分组;group 必须是功能域)
 - 生成通用断言(「标题可见」「页面能打开」)
 - 未确认就写回 spec/cases.json
-- 跑前手动清 `midscene_run/report/`(报告不去重不删除,文件名带时间戳天然不重名,平台归档取最新;手动清破坏历史)
+- 把整份 `git diff` 当收集材料(token 贵,范围被文件清单带跑)
+- 跑前一把清空 `midscene_run/report/`(破坏本轮对照);源报告超 100 由 prune 按 mtime 删最旧,不是手清
+- 源报告只增不删(会堆过百份 HTML)
 
 ## Pre-Delivery Checklist
 
