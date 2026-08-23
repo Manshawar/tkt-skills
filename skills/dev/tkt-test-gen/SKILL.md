@@ -103,7 +103,7 @@ Load `references/whitebox-flow.md` §2–3(矩阵/判覆盖/操作流)+ `referen
 测试点: <这一条验什么>
 期望值: <操作后用户必须看见什么(文案/状态/选中/列表变化)>
 断言: <expect / aiQuery+expect / aiAssert>
-group=功能域(勿写冒烟)  priority=P0|P1
+group=当前功能域(默认取本次主变化页面归属域;优先复用 cases.json 已有 group,无则新建;勿写冒烟)  priority=P0|P1
 files: 断言源码 glob(目录级或精确到文件;纯文档不登)
 spec: 所在 spec 文件名(改 spec → 冒烟跑该文件全部)
 ```
@@ -148,7 +148,7 @@ Load `references/whitebox-flow.md` §4–5。自己跑,不丢命令。必须在 
 - 猜 DOM;`aiTap` 猜文案;操作流只 `expect` 不留证;关键路径只靠一次 `aiAssert`
 - 点冒烟/全量/分组;仓库根 `npx playwright`;主题工作锁死 dark
 - 跑前清空 `midscene_run/report/`;源 HTML 只增不删(keep=50, prune 按 mtime)
-- 用「基线已有按钮」把操作/直达踢出矩阵;group 写成冒烟/回归
+- 用「基线已有按钮」把操作/直达踢出矩阵;group 不取当前功能域、写成冒烟/回归或凭空发明新域(先复用 cases.json 已有 group)
 - 条件展示去点平台 run;Step 6 默认走 `tkt test run`(归档链路才用,生成代跑用 playwright `-g`)
 - 跑完/提交只报覆盖率或「都绿了」,不交代测试点与期望值
 
