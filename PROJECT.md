@@ -53,7 +53,7 @@
 1. 起步:工作流路由(tkt-guide) + 项目规则(tkt-rules)
 2. 闭环:验证(tkt-verify → 并入 tkt-guide) + 验收复盘(tkt-socratic)
 3. 扩展:视觉回归测试(tkt-e2e-init / tkt-test-gen)、线上 SSO 测试(tkt-sso-test)
-4. 外延:本机工具链(tkt-cc-setup / skills-cli / visual-debug / clash-verge-rule)
+4. 外延:本机工具链(tkt-cc-setup / skills-cli / clash-verge-rule)
 
 演进方向 = 「把 AI 协作开发从'能跑'推向'有质量保障、成本可控、可验收'」。
 
@@ -80,7 +80,6 @@
 | --- | --- | --- | --- |
 | tkt-cc-setup | global | **CC + cc-switch 本机配置排查修复**:HUD、双 token、人民币计费 | "切换供应商后底部没了"、"配 HUD" |
 | skills-cli | global | **npx skills 命令判断树**:动手前先判断该用哪个命令 | "装 skill"、"同步 skill" |
-| visual-debug | global | **纯文本模型的视觉侧车**:`tkt vision` 检视/比对 + 修复循环 | "看图片"、"分析截图" |
 | clash-verge-rule | global | **Clash 白名单分流规则管理**:加/删规则、内网 DNS | "把 xxx 加到代理"、"配常用规则" |
 
 ---
@@ -99,7 +98,6 @@
 | tkt-sso-test | **真实登录链/黑盒**:绝不 mock | "线上真实 SSO 登录,只读不写" | 铁律感 |
 | tkt-cc-setup | **修理工/对账**:doctor 先行,一键 apply | "排查 + 一键配置,人民币计费算得清" | 实用、救火 |
 | skills-cli | **命令字典/判断树**:动手前先判断 | "装/更新/查/移除前,先判断该用哪个命令" | 简洁、查表 |
-| visual-debug | **侧车/眼睛**:Vision 是 Eyes,主模型是 Brain | "纯文本模型的视觉侧车,`tkt vision` 检视比对" | 冷静、辅助 |
 | clash-verge-rule | **白名单/守卫**:绝不动兜底 MATCH,DIRECT | "白名单模式,只有列出的走代理,其余直连" | 规则感、防火墙气质 |
 
 **图标隐喻占位文本**(给 ComfyUI 文生图的 prompt 方向,每个 skill 一个核心视觉元素):
@@ -111,7 +109,6 @@
 - tkt-sso-test:锁 + 登录链 / 钥匙链 / 浏览器窗口
 - tkt-cc-setup:扳手 + 美元改人民币符号 / 仪表盘底部状态栏
 - skills-cli:命令提示符 `$` / 字典 / 判断树
-- visual-debug:眼睛 / 侧车 / 双画面比对
 - clash-verge-rule:盾牌 / 白名单清单 / 分流漏斗
 
 ---
