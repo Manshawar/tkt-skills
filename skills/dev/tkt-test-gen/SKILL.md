@@ -85,7 +85,9 @@ tkt-test-gen Progress:
 1. `agent-browser open <url>` → `snapshot -i` → **从快照落地**要点的每个元素:selector + 文案 + 层级。禁止从源码猜 DOM。
 2. 接口结构确认：读对应 service 文件 或 `agent-browser` network 抓一次,确认返回结构再写 mock（如 `data: [...]` vs `data: { result: [...] }`）。
 3. **直达/条件展示读代码**(searchParams、条件渲染)。snapshot 里没有 `?case=`。条件展示造数据(临时目录 + finally 清理),不真触发平台 run。
-4. 需要写断言时才 `git diff -- <选定相关文件>`。
+4. **入口方式判定**:探测时直接 `open <url>` 只是拿选择器的手段,不代表 spec 能 `goto` 直达。**读目标页 created/mounted**:若数据来自 sessionStorage/localStorage/路由 state(由前置页写入后 push),spec 必须走真实入口链路(前置页 → 点按钮 → 进入目标页),禁止直接 goto + addInitScript 预写 storage——预写绕过前置页逻辑(如 `beforeRouteLeave` 清理、跳转前校验),且直接 goto 缺前置数据时页面本身就是异常态(白屏/接口报错),探出的选择器和断言都不可信。判定标准:`grep -n "sessionStorage\|localStorage" <目标页>` 看 created 里是否消费。
+5. **角色权限路由判定**(动态路由项目必查):目标页若按角色动态注册(`resetRouter(role)` / `role-router` / 路由表按 `roleType` 过滤),**先确认当前登录角色的路由表含目标页**,否则 `goto` 会被守卫静默弹回角色首页(不报错,URL 变成 `/HMMain?role=0` 之类)。判定:探测后 `location.href` 是否还是目标 path;被弹回 = 当前角色无权限,**换有权限的角色/账号(改 `?role=xx` 或换 testlogin 账号)再探**,不要在无权限角色下硬探。`?role=xx` 是入口钥匙,漏了会一直 404/弹回。
+6. 需要写断言时才 `git diff -- <选定相关文件>`。
 
 **产出（硬指标）**：一个「选择器清单」区块,列每个交互点的稳定选择器来源:
 
@@ -135,7 +137,8 @@ Load `references/whitebox-flow.md` §4–5。自己跑,不丢命令。必须在 
 
 - 默认只跑入库范围。`-g` 用不含 `/` `?` 的子串;多条 `-g "A|B|C"`(PowerShell 必须给 grep 加引号)
 - 用户明确说全跑/验收该 spec → 跑该 spec 整文件,仍禁止点 UI run
-- 红了读失败理由/截图再修,同一条 ≤3
+- 红了读失败理由/截图再修,同一根因方向 ≤3。**3 次未绿 = 停**:禁止换思路继续猜(改断言迁就/换选择器/改 mock 绕过,改断言再跑也算同一次猜,不重新计数)。向用户报告:失败现象 + 已试 3 次的方向 + 判断(代码 bug / 环境 / 数据依赖),等人定
+- **验证被环境阻断 ≠ 已验证**:浏览器验证进不去目标页(权限/角色守卫/数据缺失)时,**禁止退而用「diff 字符串比对」充数并在交付里写「已验证」**。环境阻断是环境阻断,如实报「验证未完成 + 卡点(哪个角色/哪步进不去)」,由用户给有权限的入口(角色/账号/数据)后再验。diff 一致 ≠ 渲染正确——只有真实页面渲染出期望结果才算验证通过
 - 被测服务用专用端口,防 `reuseExistingServer` 连到别人的页
 
 跑完 Load `references/coverage-review.md`:对照 **Step 3 矩阵**(不要重新全站 snapshot 当新分母)。输出功能点覆盖率 A/B + 报告覆盖率 N/M + 两份缺口。只报报告层 = 没完成。
@@ -158,16 +161,23 @@ Load `references/whitebox-flow.md` §4–5。自己跑,不丢命令。必须在 
 - 没出选项就探测/写矩阵;有工作史还先吞 git 名单;整份 `git diff` 进上下文
 - 猜 DOM;`aiTap` 猜文案;操作流只 `expect` 不留证;关键路径只靠一次 `aiAssert`
 - **未探查就写 spec / 从源码猜选择器**（Step 1.3 的选择器清单是硬产出,没有就禁止 Step 3;靠「跑→报错→改」兜底是最大时间黑洞,选择器必须来自 snapshot）
+- **目标页直接 `goto` + addInitScript 预写 storage 伪造入口**（页面 created 消费 sessionStorage 时,必须走前置页点击进入;直接 goto 缺前置数据 = 异常态,验证不过关）
+- **无权限角色下硬探目标页 / 被守卫弹回还当页面坏了排查**（动态路由项目:先确认角色路由表含目标页,被静默弹回 = 角色无权限,换 `?role=xx` 或有权限账号,别在错角色下反复试）
+- **把 diff 当验证 / 验证被环境阻断还报「已验证」**（环境进不去页面就实报「验证未完成+卡点」,diff 字符串一致不等于渲染正确;只有真实页面渲染出期望结果才算过）
 - 点冒烟/全量/分组;仓库根 `npx playwright`;主题工作锁死 dark
 - 跑前清空 `midscene_run/report/`;源 HTML 只增不删(keep=50, prune 按 mtime)
 - 用「基线已有按钮」把操作/直达踢出矩阵;group 不取当前功能域、写成冒烟/回归或凭空发明新域(先复用 cases.json 已有 group)
 - 条件展示去点平台 run;Step 6 默认走 `tkt test run`(归档链路才用,生成代跑用 playwright `-g`)
 - 跑完/提交只报覆盖率或「都绿了」,不交代测试点与期望值
+- 3 次未绿还换思路继续猜(改断言迁就/换选择器/改 mock 绕过)——超限必须停下问人,改断言再跑也算同一次猜
 
 ## Pre-Delivery Checklist
 
 - [ ] 1.2 / 4 用封闭点选问过(有选择题工具时没把 A/B/C 写进普通回复);用户已选;矩阵未用基线/前置顶操作
 - [ ] 入库=缺口且无不测原因;人确认后才写回;files/spec 已登;group 是功能域
 - [ ] Step 1.3 选择器清单已产出,spec 里每个 selector 都能溯源到 snapshot
+- [ ] 目标页入口已判定:created 消费 storage/路由 state 的页,spec 走真实入口链路,未用 goto+预写 storage 伪造
+- [ ] 角色权限已判定:动态路由项目,探测用角色的路由表含目标页(被守卫弹回已换 role/账号重探)
+- [ ] 验证真实性:交付里写「已验证」的,确实是真实页面渲染确认,非 diff 比对充数;验证被环境阻断已如实报卡点
 - [ ] 已代跑(或提交前未再跑已标明);两层覆盖率已输出且缺口已补
 - [ ] 已向用户交代本次测试说明:每条测试点 + 期望值 + 结果
