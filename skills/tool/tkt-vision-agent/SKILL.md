@@ -1,6 +1,6 @@
 ---
 name: tkt-vision-agent
-description: "安装 vision-analyst 子 agent + 写入 CLAUDE.md 视觉分工（template/style 归子 agent，逻辑归主 agent）。与 CCR 无强绑定。Actions: 装子agent, 视觉分工, vision-analyst, 改UI派发, doctor, apply。Triggers: 装vision agent, 视觉子agent, 改UI子agent, 页面视觉分工, vision-analyst, /tkt-vision-agent。非触发: 含图CCR转发→tkt-ccr-image-route; CCR初始化→tkt-ccr-init; 单次识图且主模型不能看图→先 tkt-ccr-image-route 或换主模型。"
+description: "安装 vision-analyst 子 agent + 写入 CLAUDE.md 视觉分工（Fusion MCP 轻识图/轻 UI，大改 UI 派子 agent）。仅 Claude Code。Actions: 装子agent, 视觉分工, vision-analyst, 改UI派发, doctor, apply。Triggers: 装vision agent, 视觉子agent, 改UI子agent, 页面视觉分工, vision-analyst, /tkt-vision-agent。非触发: CCR初始化→tkt-ccr-init; 含图Router备用→docs/ccr-image-route-backup.md; Cursor IDE 多模态不走本 skill。"
 argument-hint: "[doctor|apply] [--model Provider/model] [--dry-run] [--skip-agent|--skip-claude-md]"
 metadata:
   scope: global
@@ -10,9 +10,9 @@ metadata:
 
 IRON LAW:
 
-- **不**写 CCR Router（`tkt-ccr-image-route`）
-- **禁止** base64 / data URI 贴图；只用 Read + 绝对路径
-- **禁止**单次识图派 vision-analyst（主 agent Read 或 CCR 转发）
+- **不**写 CCR Router（备用见 `docs/ccr-image-route-backup.md`）
+- **禁止** base64 / data URI 贴图；Fusion 用 `vision_understand` MCP，或 Read + 绝对路径
+- **禁止**单次识图 / 轻量 UI 派 vision-analyst（主 agent + Fusion MCP）
 - apply 后 **重开 claude**
 
 Red Flags:
@@ -28,7 +28,7 @@ Red Flags:
 | 场景 | 本 skill |
 | --- | --- |
 | 多轮改 UI / 设计稿 / template+style | ✅ |
-| 单次识图 OCR | ❌ 主 Read；不能看图 → `tkt-ccr-image-route` |
+| 单次识图 / 轻量 UI | ❌ 主 agent + Fusion `vision_understand` MCP |
 | 逻辑 / API / store | ❌ 主 agent |
 
 ## Workflow
@@ -78,18 +78,18 @@ node scripts/apply.mjs --model 'Provider/model' --skip-claude-md
 
 - 每张截图派子 agent
 - 子 agent 写平行整页 HTML
-- 与 `tkt-ccr-image-route` 混在一次 apply
+- 把 CCR 含图 Router 写进本 apply
 
 ## Pre-Delivery Checklist
 
 - [ ] 用户给了 `Provider/model`
 - [ ] doctor `vision_agent` + `claude_md_snippet` ok
 - [ ] 用户已重开 claude
-- [ ] 单次识图需求已指向主 Read / `tkt-ccr-image-route`（若相关）
+- [ ] 单次识图 / 轻 UI 已指向 Fusion MCP，非 vision-analyst
 
 ## 相关
 
-- `tkt-ccr-image-route` — 主供应商无多模态时的含图转发（可选）
+- `docs/ccr-image-route-backup.md` — 非 Fusion 时 Read 含图转发（备用，无 skill）
 - `tkt-ccr-init` — CCR 基础设施（可选）
 
 ## 安装

@@ -30,8 +30,9 @@
 | [skills-cli](skills/tool/skills-cli/SKILL.md) | `npx skills` 命令速查与判断树 — 装/更新/查/移除前先判断该用哪个命令 | global |
 | [clash-verge-rule](skills/tool/clash-verge-rule/SKILL.md) | 管理 Clash 白名单分流规则 — 加/删规则、配常用规则、清空/列出、内网 DNS | global |
 | [tkt-jira-fix](skills/tool/tkt-jira-fix/SKILL.md) | 用 agent-browser 填 JIRA bug 处理日志（开始处理 + 已修复填表） | global |
-| [tkt-ccr-image-route](skills/tool/tkt-ccr-image-route/SKILL.md) | CCR 含图转发 — 主供应商无多模态时 Read 请求 rewrite 到另一 Provider/model | global |
-| [tkt-vision-agent](skills/tool/tkt-vision-agent/SKILL.md) | vision-analyst 子 agent + CLAUDE.md 视觉分工（与 CCR 解耦） | global |
+| [tkt-vision-agent](skills/tool/tkt-vision-agent/SKILL.md) | vision-analyst 子 agent + CLAUDE.md 视觉分工（Fusion MCP + 大改 UI 派发） | global |
+
+含图 CCR Router 备用方案见 [docs/ccr-image-route-backup.md](docs/ccr-image-route-backup.md)（非 skill）。
 
 ## 安装
 

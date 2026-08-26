@@ -14,7 +14,7 @@
 | --- | --- |
 | **tkt-ccr-init** | CCR 端口、proxy、鉴权、主模型、Provider contextWindow |
 | **tkt-cc-setup** | claude-hud statusLine、人民币、火山用量行 |
-| **tkt-ccr-image-route** | 仅含图 Router 转发（主供应商无多模态时） |
+| **docs/ccr-image-route-backup.md** | 含图 Router 备用（非 Fusion + Read 直读图） |
 | **tkt-vision-agent** | vision-analyst + CLAUDE.md 视觉段（不依赖 CCR） |
 
 先 init，再 setup/vision。

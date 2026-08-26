@@ -36,7 +36,7 @@ console.log(
       dryRun: args.dryRun,
       model: args.model,
       changes,
-      next: "restart claude. CCR image route (if needed): tkt-ccr-image-route",
+      next: "restart claude. Non-Fusion Read+image fallback: docs/ccr-image-route-backup.md",
     },
     null,
     2,

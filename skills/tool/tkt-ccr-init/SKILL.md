@@ -1,6 +1,6 @@
 ---
 name: tkt-ccr-init
-description: "Claude Code Router(CCR) 新电脑/重装基础设施初始化与踩坑修复。launchd 3456、settings↔cc-switch 同步、api-key-helper、proxy=none、主模型全名、Provider contextWindow。不含含图 Router。Actions: 初始化CCR, doctor, apply, 401, 502, Not logged in, launchd。Objects: claude-code-router, config.sqlite, 3456, apiKeyHelper, WIF, cc-switch。Triggers: 初始化CCR, 新电脑配CCR, CCR连不上, 502 upstream, Not logged in, ccr start冲突, 配claude code router, /tkt-ccr-init。非触发: 含图转发→tkt-ccr-image-route; vision子agent→tkt-vision-agent; HUD→tkt-cc-setup。"
+description: "Claude Code Router(CCR) 新电脑/重装基础设施初始化与踩坑修复。launchd 3456、settings↔cc-switch 同步、api-key-helper、proxy=none、主模型全名、Provider contextWindow。不含含图 Router。Actions: 初始化CCR, doctor, apply, 401, 502, Not logged in, launchd。Objects: claude-code-router, config.sqlite, 3456, apiKeyHelper, WIF, cc-switch。Triggers: 初始化CCR, 新电脑配CCR, CCR连不上, 502 upstream, Not logged in, ccr start冲突, 配claude code router, /tkt-ccr-init。非触发: 含图转发备用→docs/ccr-image-route-backup.md; vision子agent→tkt-vision-agent; HUD→tkt-cc-setup。"
 argument-hint: "[doctor|apply] [--main-model Provider/model] [--context-tokens N] [--dry-run]"
 metadata:
   scope: global
@@ -23,7 +23,7 @@ Red Flags（出现就停，回 Step 1）:
 - 手改 JSON 不跑 doctor/apply
 - 把含图 Router 或 vision-analyst 写进 init
 
-**范围**：CCR 基础设施 only。含图转发 → `tkt-ccr-image-route`；vision 子 agent → `tkt-vision-agent`；HUD → `tkt-cc-setup`。
+**范围**：CCR 基础设施 only。含图转发备用 → `docs/ccr-image-route-backup.md`；vision 子 agent → `tkt-vision-agent`；HUD → `tkt-cc-setup`。
 
 ## 模式
 
@@ -116,7 +116,7 @@ node --experimental-sqlite scripts/apply.mjs \
 
 1. 重开 `claude`
 2. `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3456/` ≠ 000
-3. 按需：`tkt-ccr-image-route` / `tkt-vision-agent`
+3. 按需：`tkt-vision-agent`；非 Fusion 含图转发见 `docs/ccr-image-route-backup.md`
 
 ## Anti-Patterns
 

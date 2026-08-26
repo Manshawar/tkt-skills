@@ -29,7 +29,7 @@
    `settings.model=fable/haiku/sonnet/opus` 易触发登录态/映射混乱。主模型用 `qax/deepseek-v4-flash` 这类全名。
 
 8. **只改 FABLE 槽位**  
-   不等于读图修好；含图走 `tkt-ccr-image-route`。
+   不等于读图修好；非 Fusion 含图见 `docs/ccr-image-route-backup.md`。
 
 9. **cc-switch 覆盖 settings**  
    只改 `~/.claude/settings.json` 白改。必须同步 `common_config_claude` + 当前供应商 `settings_config`。本 skill apply 会同步。
@@ -50,5 +50,5 @@
 2. 启用 launchd（CCR「登录时启动」或 `references/launchd.md`）  
 3. **`tkt-ccr-init`** doctor → apply `--main-model`  
 4. **`tkt-cc-setup`**（可选）HUD / 底部栏  
-5. **`tkt-ccr-image-route`**（可选）— 主供应商无多模态时的含图转发
+5. **`docs/ccr-image-route-backup.md`**（可选）— 非 Fusion 时 Read 含图转发
 6. **`tkt-vision-agent`**（可选）— 与 CCR 无强绑定
