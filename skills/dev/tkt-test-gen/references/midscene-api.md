@@ -36,6 +36,8 @@ await aiAssert('界面左侧有类目筛选功能')
 - 只有调用 midscene API(`ai`/`aiInput`/`aiTap`/`aiQuery`/`aiAssert`)才生成带截图报告
 - 纯确定性断言(`expect`/`getByRole`)不调 midscene → 无报告,功能成功与否不可审阅
 - **功能操作流的关键断言用 aiQuery/aiAssert 留证**,报告里就有「操作 + 截图」,可审阅功能是否成功
+- **禁止 aiAssert/aiQuery 用 `.catch(() => {})` 静默吞错**——模型 404/超时被吞,用例假绿 + 报告空壳,视觉断言失效不可见。要么不吞(失败即红),要么断言前先验证模型连通
+- **写用例前先验证 `.env` 连通**:dotenv 加载四项向 `BASE_URL + "/chat/completions"` 发真实请求必须 200。火山 ARK 特例:Midscene 端点须 `/api/coding/v1`(带 `/v1`),CCR 的 `/api/coding` 是 Anthropic 兼容,两套 base_url 不同。缺 `/v1` 全 404 → 假绿
 
 ## 4. 报告挂载机制
 

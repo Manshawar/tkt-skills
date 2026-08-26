@@ -84,6 +84,13 @@ MIDSCENE_MODEL_FAMILY=<family>
 
 `MIDSCENE_MODEL_FAMILY` 按服务商填(openai/anthropic/google 等),与 `MODEL_NAME` 不对应时单独调整。值从模型服务商控制台获取。
 
+**⚠️ 填完 .env 必须先验证连通,再跑测试**(否则视觉断言静默失效):
+1. 用 dotenv 加载 `.env` 四项,向 `BASE_URL + "/chat/completions"` 发一次真实请求,必须 200。
+2. 成功后再跑带 `aiAssert`/`aiQuery` 的用例,确认 `midscene_run/report/` 生成含截图+AI 分析的 HTML,且**无 `404 status code` 日志**。
+3. **禁止视觉断言用 `.catch(() => {})` 静默吞错**——吞了用例假绿,视觉断言挂了看不见。
+
+> **火山 ARK 特例(已踩坑)**: Midscene/OpenAI 兼容端点是 `https://ark.cn-beijing.volces.com/api/coding/v1`(**带 `/v1`**),不是 CCR/Anthropic 的 `/api/coding`。缺 `/v1` 时所有请求 404 → aiAssert 失败被吞 → 假绿 + 报告空壳。配完用上面的探测命令实测。
+
 ## Anti-Patterns
 
 - Do NOT hardcode `http://localhost:5173` — read the real port.
@@ -102,5 +109,7 @@ MIDSCENE_MODEL_FAMILY=<family>
 - [ ] 冒烟 hook 已设置:冒烟脚本(`.hooks/smoke.sh`)+ 按当前环境生成的 hook 接入(选例靠 cases.json files/spec)
 - [ ] `cases.json` 已生成(必选):每个 spec 用例名都有分组/优先级/files/spec 登记(平台靠它分组触发 + diff 选例)
 - [ ] `e2e/.env` 四项 MIDSCENE_MODEL_* 由用户自填(不拷贝既有 CLI,无 `<...>` 占位符残留)
+- [ ] `.env` 已实测连通:`BASE_URL + "/chat/completions"` 真实请求 200(火山 ARK 须带 `/v1`,见上文)
+- [ ] 视觉断言未用 `.catch(() => {})` 静默吞错;跑过一条 aiAssert 用例,`midscene_run/report/` 含截图+AI 分析且无 `404` 日志
 - [ ] No placeholder text (`TODO`, `{{xxx}}`) remains in generated files
 - [ ] Install/test commands are exact syntax for the detected package manager
