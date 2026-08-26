@@ -1,7 +1,6 @@
 ---
 name: tkt-vision-agent
-description: "安装 vision-analyst 子 agent + 写入 CLAUDE.md 视觉分工（Fusion MCP 轻识图/轻 UI，大改 UI 派子 agent）。仅 Claude Code。Actions: 装子agent, 视觉分工, vision-analyst, 改UI派发, doctor, apply。Triggers: 装vision agent, 视觉子agent, 改UI子agent, 页面视觉分工, vision-analyst, /tkt-vision-agent。非触发: CCR初始化→tkt-ccr-init; 含图Router备用→docs/ccr-image-route-backup.md; Cursor IDE 多模态不走本 skill。"
-argument-hint: "[doctor|apply] [--model Provider/model] [--dry-run] [--skip-agent|--skip-claude-md]"
+description: "管理视觉子 agent（vision-analyst，大改 UI sidechain）与视觉分工。正本在本 skill 的 agent/ 目录，发布用 cp 同步。仅 Claude Code。Actions: 装子agent, 视觉子agent, vision-analyst, 改UI派发, 视觉分工, 同步。Triggers: 装vision agent, 换视觉子agent模型, 大改UI派谁, 页面视觉分工, vision-analyst, /tkt-vision-agent。非触发: CCR初始化→tkt-ccr-init; 含图Router备用→references/ccr-image-route-backup.md; Cursor IDE 多模态不走本 skill。"
 metadata:
   scope: global
 ---
@@ -10,90 +9,81 @@ metadata:
 
 IRON LAW:
 
-- **不**写 CCR Router（备用见 `docs/ccr-image-route-backup.md`）
+- **不**写 CCR Router（备用见 `references/ccr-image-route-backup.md`）
 - **禁止** base64 / data URI 贴图；Fusion 用 `vision_understand` MCP，或 Read + 绝对路径
 - **禁止**单次识图 / 轻量 UI 派 vision-analyst（主 agent + Fusion MCP）
-- apply 后 **重开 claude**
+- 子 agent 只改 template / style / 布局；逻辑回主 agent
+- 换模型流程：**改正本 → 同步 → 重开 claude**（见下）
 
 Red Flags:
 
-- 把 CCR 含图规则写进本 apply
+- 把 CCR 含图规则写进本 skill
 - 主模型已多模态仍强制派子 agent 做单次 OCR
 - 子 agent 改 script/API/store
+- 主 agent 直接改 `~/.claude/agents/vision-analyst.md`（正本在 `agent/`）
 
-**产出**：`~/.claude/agents/vision-analyst.md` + `CLAUDE.md` 中 `<!-- tkt-vision-agent:begin -->` 块。
+**产出**：本 skill `agent/vision-analyst.md`（正本）+ `~/.claude/agents/vision-analyst.md`（生效副本）。
 
 ## 何时用
 
 | 场景 | 本 skill |
 | --- | --- |
-| 多轮改 UI / 设计稿 / template+style | ✅ |
+| 首次装 / 换 vision-analyst 模型 | ✅ |
+| 多轮改 UI / 设计稿 / template+style | ✅（装好后由 agent 定义分流，无需本 skill） |
 | 单次识图 / 轻量 UI | ❌ 主 agent + Fusion `vision_understand` MCP |
-| 逻辑 / API / store | ❌ 主 agent |
 
-## Workflow
+## 文件布局
 
 ```
-tkt-vision-agent Progress:
-
-- [ ] Step 1: 问 vision-analyst 的 Provider/model ⚠️ REQUIRED
-- [ ] Step 2: doctor --model ⚠️ REQUIRED
-- [ ] Step 3: 确认将写 agent + CLAUDE.md ⚠️ REQUIRED
-- [ ] Step 4: apply --dry-run 再 apply
-- [ ] Step 5: 重开 claude
+skills/tool/tkt-vision-agent/
+├── SKILL.md                  # 本文件
+├── agent/vision-analyst.md   # 子 agent 正本（唯一改动点）
+└── references/               # 备用文档
 ```
 
-## Step 1 ⚠️ REQUIRED
+`~/.claude/agents/vision-analyst.md` 是正本 `agent/vision-analyst.md` 的**同步副本**，勿直接改。
 
-Ask: 子 agent 默认 `Provider/model`？（例 `火山ARK/doubao-seed-2.1-turbo`）
+## 换模型 / 改 agent 流程
 
-## Step 2: doctor
+1. **改正本** `agent/vision-analyst.md` 的 `model:`（或任何 frontmatter/内容）
+2. **同步到生效副本**：
+   ```bash
+   cp skills/tool/tkt-vision-agent/agent/vision-analyst.md ~/.claude/agents/vision-analyst.md
+   ```
+   （`agent/` 还有别的文件时，可 `cp agent/*.md ~/.claude/agents/`）
+3. **重开 claude** 生效
 
-**在本 skill 目录**：
+## Step 1（换模型前，可选）
+
+读取 `~/.claude/agents/vision-analyst.md` 的 `model:` 确认当前值。不存在或用户明确要换，问「子 agent 默认 `Provider/model`？」（例 `火山ARK/doubao-seed-2.1-turbo`）。
+
+## 验证
+
+同步后确认生效副本的 `model:` 与正本一致：
 
 ```bash
-node scripts/doctor.mjs --model 'Provider/model'
+diff skills/tool/tkt-vision-agent/agent/vision-analyst.md ~/.claude/agents/vision-analyst.md && echo OK
 ```
 
-## Step 3 ⚠️ REQUIRED
+## 新电脑初始化（安装即激活 UI 还原工作流）
 
-将写/覆盖：agent frontmatter `model:`；CLAUDE.md marker 块（含分工表 + 禁止 base64 + Logic deferred）。
+本 skill 的 `agent/` 目录是 vision-analyst 子 agent 的**跨机器分发正本**——它定义了「多模态模型派做 UI 还原/大改 UI」的工作流。新电脑只需两步，无需再跑任何安装脚本：
 
-用户说「装 vision agent / apply」= 同意。
+1. 装 skill：`npx skills add Manshawar/tkt-skills -g --skill tkt-vision-agent`
+2. 同步正本到生效位置：
 
-## Step 4: apply
+   ```bash
+   cp ~/.claude/skills/tkt-vision-agent/agent/*.md ~/.claude/agents/
+   ```
 
-```bash
-node scripts/apply.mjs --model 'Provider/model' --dry-run
-node scripts/apply.mjs --model 'Provider/model'
-# 只更新 agent：
-node scripts/apply.mjs --model 'Provider/model' --skip-claude-md
-```
+3. 重开 claude。
 
-## Step 5
-
-重开 `claude`。测：派 vision-analyst 改一页 UI，handoff 含 `Logic deferred to main`。
-
-## Anti-Patterns
-
-- 每张截图派子 agent
-- 子 agent 写平行整页 HTML
-- 把 CCR 含图 Router 写进本 apply
-
-## Pre-Delivery Checklist
-
-- [ ] 用户给了 `Provider/model`
-- [ ] doctor `vision_agent` + `claude_md_snippet` ok
-- [ ] 用户已重开 claude
-- [ ] 单次识图 / 轻 UI 已指向 Fusion MCP，非 vision-analyst
-
-## 相关
-
-- `docs/ccr-image-route-backup.md` — 非 Fusion 时 Read 含图转发（备用，无 skill）
-- `tkt-ccr-init` — CCR 基础设施（可选）
+之后派 vision-analyst 子 agent，即走 `agent/vision-analyst.md` 定义的 UI 还原工作流（多模态模型 + 铁律 + handoff `Logic deferred to main`）。
 
 ## 安装
 
 ```bash
 npx skills add Manshawar/tkt-skills -g --skill tkt-vision-agent
 ```
+
+`npx skills update` 会拉新正本到 `~/.claude/skills/tkt-vision-agent/agent/`，但**不会**自动覆盖 `~/.claude/agents/` —— 更新后按「换模型/改 agent 流程」同步一次（同上面「新电脑初始化」第 2 步的 `cp`）。
