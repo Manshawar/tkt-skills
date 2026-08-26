@@ -8,7 +8,7 @@ CCR 在 API body 含 `type:image` 时，把该请求 **rewrite** 到你指定的
 
 - 主模型已能原生看图 → 直接 Read，不必写规则
 - 多轮改 UI → 用 `vision-analyst` 子 agent（与 CCR 无强绑定）
-- 没有装 CCR → 换主模型到多模态，或 `tkt vision` 侧车
+- 没有装 CCR → 换主模型到多模态
 
 # 踩坑
 

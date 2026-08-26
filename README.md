@@ -74,7 +74,7 @@ skills/<cat>/<name>/scripts/       # 配套脚本
 
 | 仓库 | 内容 | 安装 |
 | --- | --- | --- |
-| 本仓库 tkt-skills | 公开 skill(tkt-guide / tkt-rules / tkt-socratic / tkt-e2e-init / tkt-sso-test / tkt-test-gen / visual-debug / skills-cli / tkt-cc-setup / clash-verge-rule) | `npx skills add Manshawar/tkt-skills -g` |
+| 本仓库 tkt-skills | 公开 skill（上表） | `npx skills add Manshawar/tkt-skills -g` |
 | toolkit | 私有 skill(不再放公开类 skill) | 按需 `npx skills add Manshawar/toolkit -g`(私有授权) |
 
 ## 开发工作区

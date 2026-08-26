@@ -29,7 +29,7 @@
    `settings.model=fable/haiku/sonnet/opus` 易触发登录态/映射混乱。主模型用 `qax/deepseek-v4-flash` 这类全名。
 
 8. **只改 FABLE 槽位**  
-   不等于读图修好；含图要走 CCR `Router.rules` 或 `tkt-ccr-vision`。
+   不等于读图修好；含图走 `tkt-ccr-image-route`。
 
 9. **cc-switch 覆盖 settings**  
    只改 `~/.claude/settings.json` 白改。必须同步 `common_config_claude` + 当前供应商 `settings_config`。本 skill apply 会同步。
