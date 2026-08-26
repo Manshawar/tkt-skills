@@ -26,9 +26,12 @@
 | Skill | 说明 | 作用域 |
 | --- | --- | --- |
 | [tkt-cc-setup](skills/tool/tkt-cc-setup/SKILL.md) | Claude Code + cc-switch 本机排查/一键配置 — 底部 HUD、双 token、通用配置持久化 | global |
+| [tkt-ccr-init](skills/tool/tkt-ccr-init/SKILL.md) | CCR 新电脑初始化 — launchd/3456、鉴权、proxy、主模型全名、cc-switch 同步 | global |
 | [skills-cli](skills/tool/skills-cli/SKILL.md) | `npx skills` 命令速查与判断树 — 装/更新/查/移除前先判断该用哪个命令 | global |
 | [clash-verge-rule](skills/tool/clash-verge-rule/SKILL.md) | 管理 Clash 白名单分流规则 — 加/删规则、配常用规则、清空/列出、内网 DNS | global |
 | [tkt-jira-fix](skills/tool/tkt-jira-fix/SKILL.md) | 用 agent-browser 填 JIRA bug 处理日志（开始处理 + 已修复填表） | global |
+| [tkt-ccr-image-route](skills/tool/tkt-ccr-image-route/SKILL.md) | CCR 含图转发 — 主供应商无多模态时 Read 请求 rewrite 到另一 Provider/model | global |
+| [tkt-vision-agent](skills/tool/tkt-vision-agent/SKILL.md) | vision-analyst 子 agent + CLAUDE.md 视觉分工（与 CCR 解耦） | global |
 
 ## 安装
 
