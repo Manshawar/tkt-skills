@@ -14,6 +14,7 @@ IRON LAW:
 - **禁止**单次识图 / 轻量 UI 派 vision-analyst（主 agent + Fusion MCP）
 - 子 agent 只改 template / style / 布局；逻辑回主 agent
 - 换模型流程：**改正本 → 同步 → 重开 claude**（见下）
+- **高精度 UI 还原 / 整页 HTML 还原（截图/设计稿 → 独立页面）强制派 vision-analyst**，主 agent 禁止直做（实测子 agent 还原精度更高，见 memory `ui-restore-use-vision-analyst`）
 
 Red Flags:
 
@@ -30,6 +31,7 @@ Red Flags:
 | --- | --- |
 | 首次装 / 换 vision-analyst 模型 | ✅ |
 | 多轮改 UI / 设计稿 / template+style | ✅（装好后由 agent 定义分流，无需本 skill） |
+| **高精度 UI 还原 / 整页 HTML 还原** | ✅ **强制派** vision-analyst，主 agent 禁止直做 |
 | 单次识图 / 轻量 UI | ❌ 主 agent + Fusion `vision_understand` MCP |
 
 ## 文件布局

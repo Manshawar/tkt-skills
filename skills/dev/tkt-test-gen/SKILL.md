@@ -32,7 +32,7 @@ tkt-test-gen Progress:
   - [ ] 1.1 改动本质(有工作史先归纳;无历史才用 git 名单聚类)
   - [ ] 1.2 出验收选项(封闭点选) ⛔ 未选则停止;已选则留底并继续
   - [ ] 1.2b 人选定方向 ⛔ BLOCKING
-  - [ ] 1.3 只探选定路由:snapshot -i + 读代码(直达/条件展示)
+  - [ ] 1.3 先探查再写:agent-browser snapshot -i 拿真实结构 ⛔ BLOCKING（未产出选择器清单禁止进 Step 3）
 - [ ] Step 2: 对齐现有 e2e/ ⚠️ REQUIRED
 - [ ] Step 3: 矩阵 + 草稿 ⚠️ REQUIRED(不写回)
 - [ ] Step 4: 确认入库(封闭点选) ⚠️ REQUIRED
@@ -76,17 +76,28 @@ tkt-test-gen Progress:
 
 **1.2b ⛔** 未选定禁止 1.3。本轮用户已经明确选定(如「就测 A+B」) → 不要再停一次,把已选写入方向后进 1.3。未选方向在矩阵写「本次不测:用户未选」。禁止为迁就 `aiAssert` 锁死要验的状态(主题却 `beforeEach` 写死 dark)。
 
-**1.3 人选之后** 才:
+**1.3 先探查再写 ⛔ BLOCKING**(未产出选择器清单,禁止进入 Step 3 写 spec)
 
-1. 需要写断言时才 `git diff -- <选定相关文件>`
-2. 只探选定路由(含该方向关联页):
-```bash
-agent-browser open <url>
-agent-browser snapshot -i
-```
+**为什么**：选择器/结构错误靠「跑→报错→改」兜底是最大的时间黑洞。真实 DOM 结构与源码推断常常不符(`el-radio-button` 不是 `.el-radio`、按钮文案「确 定」带空格、toast 双层嵌套、接口返回结构不同)。探查一次的成本 << 试错一轮的成本。
+
+**必做**（只探选定路由,含该方向关联页）：
+
+1. `agent-browser open <url>` → `snapshot -i` → **从快照落地**要点的每个元素:selector + 文案 + 层级。禁止从源码猜 DOM。
+2. 接口结构确认：读对应 service 文件 或 `agent-browser` network 抓一次,确认返回结构再写 mock（如 `data: [...]` vs `data: { result: [...] }`）。
 3. **直达/条件展示读代码**(searchParams、条件渲染)。snapshot 里没有 `?case=`。条件展示造数据(临时目录 + finally 清理),不真触发平台 run。
+4. 需要写断言时才 `git diff -- <选定相关文件>`。
 
-产出:稳定选择器(禁止猜「测试/测速」,用 `a[href="/test"]`);功能点分列——存在 / 操作 / 直达 / 条件展示。没选的页不探。
+**产出（硬指标）**：一个「选择器清单」区块,列每个交互点的稳定选择器来源:
+
+```
+选择器清单（来源=snapshot ref / 读代码 / network）
+- 切 Tab: .el-radio-button (snapshot)
+- 确认按钮: getByRole('button', {name:/确\s*定/}) (snapshot,文案带空格)
+- toast: .van-toast .van-toast__text 双层 (snapshot)
+- mock 接口结构: getAllCarInfo → data 数组 (network)
+```
+
+功能点分列——存在 / 操作 / 直达 / 条件展示。没选的页不探。**spec 里出现的每个 selector 必须能在选择器清单里溯源;清单之外的选择器 = 未探查,禁止写进 spec。**
 
 ## Step 2
 
@@ -146,6 +157,7 @@ Load `references/whitebox-flow.md` §4–5。自己跑,不丢命令。必须在 
 - 把 A/B/C 或「全入?删哪条?」写进普通回复(有点选工具时会跳过选项节点)
 - 没出选项就探测/写矩阵;有工作史还先吞 git 名单;整份 `git diff` 进上下文
 - 猜 DOM;`aiTap` 猜文案;操作流只 `expect` 不留证;关键路径只靠一次 `aiAssert`
+- **未探查就写 spec / 从源码猜选择器**（Step 1.3 的选择器清单是硬产出,没有就禁止 Step 3;靠「跑→报错→改」兜底是最大时间黑洞,选择器必须来自 snapshot）
 - 点冒烟/全量/分组;仓库根 `npx playwright`;主题工作锁死 dark
 - 跑前清空 `midscene_run/report/`;源 HTML 只增不删(keep=50, prune 按 mtime)
 - 用「基线已有按钮」把操作/直达踢出矩阵;group 不取当前功能域、写成冒烟/回归或凭空发明新域(先复用 cases.json 已有 group)
@@ -156,5 +168,6 @@ Load `references/whitebox-flow.md` §4–5。自己跑,不丢命令。必须在 
 
 - [ ] 1.2 / 4 用封闭点选问过(有选择题工具时没把 A/B/C 写进普通回复);用户已选;矩阵未用基线/前置顶操作
 - [ ] 入库=缺口且无不测原因;人确认后才写回;files/spec 已登;group 是功能域
+- [ ] Step 1.3 选择器清单已产出,spec 里每个 selector 都能溯源到 snapshot
 - [ ] 已代跑(或提交前未再跑已标明);两层覆盖率已输出且缺口已补
 - [ ] 已向用户交代本次测试说明:每条测试点 + 期望值 + 结果
