@@ -19,7 +19,7 @@
 | [tkt-socratic](skills/dev/tkt-socratic/SKILL.md) | 实现后苏格拉底式复查 — 用模板自问,产出 ≤5 条实质风险点 | global |
 | [tkt-e2e-init](skills/dev/tkt-e2e-init/SKILL.md) | AI 视觉回归测试初始化 — Midscene + Playwright 隔离 e2e/ 子项目 | project |
 | [tkt-test-gen](skills/dev/tkt-test-gen/SKILL.md) | 根据 git diff 生成视觉回归用例 — 半自动(草稿人确认后入库) | project |
-| [tkt-sso-test](skills/dev/tkt-sso-test/SKILL.md) | 线上部署页面测试初始化 — 后台 SSO 真实登录链,不 mock 客户端环境 | project |
+| [tkt-verify](skills/dev/tkt-verify/SKILL.md) | 日常功能验证 — agent-browser 操作 + 前后截图人证,落路径自管留5轮(平台可读,无平台也能用) | project |
 
 ### 工具类 `skills/tool/`
 
