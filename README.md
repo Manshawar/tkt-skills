@@ -30,9 +30,8 @@
 | [skills-cli](skills/tool/skills-cli/SKILL.md) | `npx skills` 命令速查与判断树 — 装/更新/查/移除前先判断该用哪个命令 | global |
 | [clash-verge-rule](skills/tool/clash-verge-rule/SKILL.md) | 管理 Clash 白名单分流规则 — 加/删规则、配常用规则、清空/列出、内网 DNS | global |
 | [tkt-jira-fix](skills/tool/tkt-jira-fix/SKILL.md) | 用 agent-browser 填 JIRA bug 处理日志（开始处理 + 已修复填表） | global |
-| [tkt-vision-agent](skills/tool/tkt-vision-agent/SKILL.md) | vision-analyst 子 agent + CLAUDE.md 视觉分工（Fusion MCP + 大改 UI 派发） | global |
-
-含图 CCR Router 备用方案见 [docs/ccr-image-route-backup.md](docs/ccr-image-route-backup.md)（非 skill）。
+| [tkt-cc-provider-switch](skills/tool/tkt-cc-provider-switch/SKILL.md) | cc-switch CLI 供应商动态切换 — 临时启某厂商独立终端（start，不污染全局）或持久切默认（switch） | global |
+| [tkt-vision-agent](skills/tool/tkt-vision-agent/SKILL.md) | vision-analyst 子 agent 识图分工 — glm-5.3-flash 模型、大改 UI/高精度还原强制派子 agent | global |
 
 ## 安装
 
