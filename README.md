@@ -32,6 +32,9 @@
 | [tkt-jira-fix](skills/tool/tkt-jira-fix/SKILL.md) | 用 agent-browser 填 JIRA bug 处理日志（开始处理 + 已修复填表） | global |
 | [tkt-cc-provider-switch](skills/tool/tkt-cc-provider-switch/SKILL.md) | cc-switch CLI 供应商动态切换 — 临时启某厂商独立终端（start，不污染全局）或持久切默认（switch） | global |
 | [tkt-vision-agent](skills/tool/tkt-vision-agent/SKILL.md) | vision-analyst 子 agent 识图分工 — glm-5.3-flash 模型、大改 UI/高精度还原强制派子 agent | global |
+| [tkt-report](skills/tool/tkt-report/SKILL.md) | 日报工作流 — 采集当日 git 素材,按画像与规则写正文,归档 daily.jsonl | global |
+| [global-rules-sync](skills/tool/global-rules-sync/SKILL.md) | 全局协作规则同步 — `~/.claude/CLAUDE.md` 正本渲染到 Cursor global.mdc +（本机）tkt-skills 留档 | global |
+| [local-login](skills/tool/local-login/SKILL.md) | agent-browser 登录处理 — 走官方登录 / eval 进受保护页,不造 token | global |
 
 ## 安装
 
