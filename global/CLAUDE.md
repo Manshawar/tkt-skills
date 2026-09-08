@@ -87,8 +87,8 @@ AI 天然做加法,产出过剩。写代码/设计规则求小而美,不追大�
 - 仅当本任务已有可打开的页面/桌面窗口, 且终端/网络日志/代码不够定位时, 才用 `agent-browser`
 - UI 无法点击/被遮挡/显示异常 → 截图; 接口数据不对 → 查网络请求; 前后端不一致 → 对比页面与接口
 - 无页面或 skill 不可用: 用现有日志, 不装、不改用 Playwright 凑
-- **图片/截图读取**: 需看图时**优先派图片分析 agent**（如 `vision-analyst`，多模态模型）用 `Read` + 本地绝对路径读图；图片以原生 image message 进子 agent 自己的上下文，子 agent 返回文字结论，主线程不直接 Read 图、不灌 base64。
-- **禁止 base64 直传主上下文**: 读图不把 base64 直接拼进主模型 message（纯文本主模型看不了，多模态也易撑爆）。确需走主模型时先压缩，且用 base64 前先经用户批准。
+- **图片/截图读取**: 主模型多模态（当前 `glm-5.3-flash`）→ 主线程直接 `Read` + 本地绝对路径读图，**不派识图子 agent**（单张多张都不派）；仅大改 UI（整页/多文件/多轮看→改 template·style）才派 `vision-analyst` sidechain。主模型若换回纯文本，识图再走子 agent（原生 image message 进子 agent，子 agent 返回文字结论）。
+- **禁止 base64 直传主上下文**: 读图一律走 `Read` 原生 image message，不把 base64 文本拼进 message（撑爆上下文且纯文本模型读不了）。
 
 ## 节点验收
 
