@@ -19,6 +19,10 @@
 
 {{specialRules}}
 
+## 类型/检查纪律（仅 TypeScript 项目保留，非 TS 删除本节）
+
+{{tsTypeCheckRules}}
+
 ## 实现纪律
 
 - 优先使用项目现有的工具函数和依赖
@@ -33,3 +37,4 @@
 - 设计/规格/任务产物落 `docs/{design,spec,tickets}/NNN-描述.md`
 - 认证相关改动先读 `docs/auth-patterns.md` (若存在)
 - 行为打点相关改动先读 `docs/tracking.md` (若存在)
+

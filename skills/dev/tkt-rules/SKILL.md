@@ -67,6 +67,7 @@ Extract from dependencies:
 - Router: react-router, vue-router, @tanstack/router
 - UI: @mui, antd, element-plus, tailwindcss
 - Test: jest, vitest, playwright, cypress
+- TypeScript 项目：记下 `typescript` 与类型检查器版本（`vue-tsc` / `tsc`），供 Step 5/6 选型与版本判据；vue 项目类型检查必须 `vue-tsc`（裸 `tsc` 查不出 `.vue`），react/普通 ts 用 `tsc`
 
 ## Step 2: Present Detection Summary ⚠️ REQUIRED
 
@@ -107,6 +108,14 @@ Write to project root:
 
 If `.tkt/company/` directory exists, keep the progressive disclosure section in `AGENTS.md`. If not, keep it as a placeholder comment.
 
+Fill `{{tsTypeCheckRules}}` (仅当检测到 TypeScript)：
+- 非 TS 项目删除整节「类型/检查纪律」。
+- TS 项目按检测到的事实写 3-5 条精简纪律，条目必须"AI 从代码猜不到"（版本兼容/遮蔽陷阱/别名双配），示例（按项目裁剪，勿照抄）：
+  - vue-tsc/tsc 版本须与 typescript 兼容；老版本配新 TS 会崩或**假通过**（查不出 .vue/.tsx 内错），升级后再交付。验真查：往被查文件注入 `const x: number = 's'`，无报即失效。
+  - 勿在 env.d.ts 对真实有类型库（vue/element-plus/pinia 等）写空/伪 `declare module` 遮蔽，会整片假错（TS2347/2339）；只给确无类型的库写兜底。框架自定义 meta/全局字段走官方扩展点，勿整体覆盖模块。
+  - 全局实例属性（app.config.globalProperties 挂载）经 ComponentCustomProperties 增强在 vue-tsc 跨端不稳；优先组件库官方函数式 API（如 vant `showFailToast`）。
+  - 多包复用（monorepo alias）须 tsconfig `paths` 与打包器 alias 双配一致，否则报 `Cannot find module`。
+
 ## Step 6: Generate PostToolUse Hooks
 
 If checkers were detected in Step 1, generate `.claude/settings.json` hooks.
@@ -117,13 +126,19 @@ Detection mapping:
 |---|---|---|
 | `package.json` has `eslint` | eslint | `npx eslint <file>` |
 | `package.json` has `prettier` | prettier | `npx prettier --check <file>` |
-| `tsconfig.json` exists | tsc | `npx tsc --noEmit` |
+| `vue` in deps + `tsconfig.json` | vue-tsc | `npx vue-tsc --noEmit` |
+| `tsconfig.json` exists (无 vue) | tsc | `npx tsc --noEmit` |
 | `go.mod` + `golangci-lint` in deps | golangci-lint | `golangci-lint run <file>` |
 | `pyproject.toml` has `ruff` | ruff | `ruff check <file>` |
 | `pyproject.toml` has `mypy` | mypy | `mypy <file>` |
 | `Cargo.toml` + `clippy` | clippy | `cargo clippy <file>` |
 
 Only generate typecheck and lint hooks. Unit test / build / e2e are not hooked — they are triggered manually by change type (see tkt-guide workflow-verify).
+
+> **Vue/TS 陷阱（先例 2026-09 web/mobile）**：
+> - 裸 `tsc` 查不出 `.vue` SFC 内类型错，vue 项目必须用 `vue-tsc`。检查器版本须与 typescript 兼容（web 1.8.27 崩、mobile 0.29.8 假通过），配 TS5.x 至少 vue-tsc ≥2.1，推荐装与项目 TS 匹配的最新版。
+> - **验"是否真查"**：生成后注入 `const x: number = 's'` 到一个 .vue，`npx vue-tsc --noEmit` 若 exit=0 无报 = 检查器没在查 SFC，须先修版本再交付。
+> - Stop/PostToolUse 均属进程内 hook，无依赖时静默跳过，勿因"没跑"误判配置坏。
 
 Ask user: "Generate hooks for detected checkers? (yes/no)"
 
