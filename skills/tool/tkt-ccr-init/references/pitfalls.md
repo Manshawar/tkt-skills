@@ -51,4 +51,3 @@
 3. **`tkt-ccr-init`** doctor → apply `--main-model`  
 4. **`tkt-cc-setup`**（可选）HUD / 底部栏  
 5. **`docs/ccr-image-route-backup.md`**（可选）— 非 Fusion 时 Read 含图转发
-6. **`tkt-vision-agent`**（可选）— 与 CCR 无强绑定

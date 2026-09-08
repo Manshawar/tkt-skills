@@ -148,7 +148,7 @@ console.log(
       errors,
       next: errors.length
         ? "fix blockers then re-run doctor"
-        : "restart claude; optional: tkt-vision-agent; image-route backup: docs/ccr-image-route-backup.md",
+        : "restart claude; optional: tkt-cc-provider-switch 开多模态识图窗口; image-route backup: docs/ccr-image-route-backup.md",
     },
     null,
     2,

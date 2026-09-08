@@ -27,7 +27,7 @@ Red Flags（出现就停）:
 | 切默认厂商 / 以后都用 XX | `provider switch <ID>` |
 | 看有哪些厂商 / 当前用谁 | `provider list` |
 | 这厂商能通吗 / key 有效吗 | 验 key（见 Step 3） |
-| 某厂商做多模态子agent / 跨厂商识图 | 不归本 skill——那是 agent 定义 + 模型槽的事，见 tkt-vision-agent |
+| 识图 / 大改 UI，主模型非多模态 | `start claude <多模态厂商>` 开新窗口直做（如火山/doubao、glm） |
 
 `$ARGUMENTS` 含 `start` → 临时启动路径。含 `switch`/`use` → 持久切换路径。含 `list` → 只列表解释。含 `verify`/`测` → 走 Step 3 验 key。
 
