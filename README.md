@@ -19,7 +19,9 @@
 | [tkt-socratic](skills/dev/tkt-socratic/SKILL.md) | 实现后苏格拉底式复查 — 用模板自问,产出 ≤5 条实质风险点 | global |
 | [tkt-e2e-init](skills/dev/tkt-e2e-init/SKILL.md) | AI 视觉回归测试初始化 — Midscene + Playwright 隔离 e2e/ 子项目 | project |
 | [tkt-test-gen](skills/dev/tkt-test-gen/SKILL.md) | 根据 git diff 生成视觉回归用例 — 半自动(草稿人确认后入库) | project |
-| [tkt-verify](skills/dev/tkt-verify/SKILL.md) | 日常功能验证 — agent-browser 操作 + 前后截图人证,落路径自管留5轮(平台可读,无平台也能用) | project |
+| [tkt-walkthrough](skills/dev/tkt-walkthrough/SKILL.md) | 实现后自动回归走查 — 派子 agent + agent-browser 找问题出清单,主 agent 修复后复走查闭环 | global |
+
+> 已停用:~~tkt-verify~~(截图人证日常验证)2026-09 归档至 `skills/_archive/tkt-verify/`,由 tkt-walkthrough 替代。
 
 ### 工具类 `skills/tool/`
 
