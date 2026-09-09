@@ -1,6 +1,6 @@
 ---
 name: tkt-cc-provider-switch
-description: "用 cc-switch CLI 在供应商(provider)间动态切换 Claude Code——临时开某厂商的独立终端(不污染全局 current provider),或持久切换默认厂商。供应商含 qax/deepseek、kimi、火山ARK豆包(doubao 多模态)、Xiaomi MiMo 等本机已配 provider。Actions: 临时启动, 临时开, 切到, 切换到, 用某某开, 持久切换, 换默认, 列出, 看有哪些, 验key, 测连通, 检查CLI版本, 升级CLI, dry-run预览。Objects: cc-switch, provider, 供应商, 火山ARK, doubao, mimo, kimi, qax, claude终端, start, switch, current provider, settings临时文件。Triggers: 用火山开个终端, 临时用mimo, 切到kimi, 换个厂商跑, 多模态用doubao, cc-switch临时模式, 起个某供应商的claude, /tkt-cc-provider-switch。"
+description: "用 cc-switch CLI 在供应商(provider)间动态切换 Claude Code——临时开某厂商的独立终端(不污染全局 current provider),或持久切换默认厂商。供应商含 qax/deepseek、kimi、火山ARK豆包、Xiaomi MiMo 等本机已配 provider。Actions: 临时启动, 临时开, 切到, 切换到, 用某某开, 持久切换, 换默认, 列出, 看有哪些, 验key, 测连通, 检查CLI版本, 升级CLI, dry-run预览。Objects: cc-switch, provider, 供应商, 火山ARK, doubao, mimo, kimi, qax, claude终端, start, switch, current provider, settings临时文件。Triggers: 用火山开个终端, 临时用mimo, 切到kimi, 换个厂商跑, cc-switch临时模式, 起个某供应商的claude, /tkt-cc-provider-switch。"
 metadata:
   scope: global
 ---
@@ -27,7 +27,6 @@ Red Flags（出现就停）:
 | 切默认厂商 / 以后都用 XX | `provider switch <ID>` |
 | 看有哪些厂商 / 当前用谁 | `provider list` |
 | 这厂商能通吗 / key 有效吗 | 验 key（见 Step 3） |
-| 识图 / 大改 UI，主模型非多模态 | `start claude <多模态厂商>` 开新窗口直做（如火山/doubao、glm） |
 
 `$ARGUMENTS` 含 `start` → 临时启动路径。含 `switch`/`use` → 持久切换路径。含 `list` → 只列表解释。含 `verify`/`测` → 走 Step 3 验 key。
 
@@ -72,7 +71,6 @@ Ask: 用户说的厂商，list 里 Name 精确叫啥？current（✓ 那行）�
 - 用 node `DatabaseSync` 读 `~/.cc-switch/cc-switch.db` → `providers.settings_config` 的 env（key 只取，不打印）。
 - 发最小请求 `{model: env.ANTHROPIC_MODEL, max_tokens: 20, messages:[{role:'user',content:'ping'}]}`，头 `x-api-key` + `anthropic-version: 2023-06-01`。
 - **HTTP 200** → key 有效可用。**401 invalid_key** → key 过期/占位，报"需更新 key"，不硬用。
-- 多模态验证：再发一张图（Read 后 base64 进 image block），确认返回识别出内容 → 该厂商可做识图。
 
 ## Step 4: 执行
 
