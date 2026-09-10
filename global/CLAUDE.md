@@ -40,9 +40,11 @@
 - 只有**信息不明且对后续推导是必要前提**时才搜索/查外部资料
 - **不为查而查**:能从当前项目代码/文件/git 历史推导出来的,不查外部
 - 外部结论须标注来源;与项目内事实冲突时以项目内为准
-- **禁止内置 WebSearch**: 使用场景在中国，封控导致官方 Anthropic API 不可用，内置 WebSearch 随之不可用。关键词上网搜走 `mcp-duckgo`（DuckDuckGo，无 key）：`npx -y mcporter call --stdio 'uvx --with "duckduckgo-mcp-server[browser]" duckduckgo-mcp-server --search-backend curl' search query="{关键词}" max_results=10`。空结果/被拦先 `fetch_content`，再保底 agent-browser；不回退内置 WebSearch、不连撞
-- **agent-browser 保底**: 公开页/无登录文档优先 mcp-duckgo `fetch_content`。要看必须注册或登录的页面 → 用 agent-browser 走官方登录（`local-login`），不造 token、不硬注入登录态
-- **GitHub 查询优先用 `gh`**: 查 GitHub issues/PR/code/repo 一律先 `gh`（已登录走 API，绕过 WebFetch 域名拦截）；WebFetch/WebSearch 对 github.com 常被策略拦，不撞。示例:`gh search issues --repo <owner/repo> "<关键词>"`、`gh issue view <n> --repo <owner/repo>`、`gh api repos/<owner/repo>/contents/<path> --header "Accept: application/vnd.github.raw"`
+- **工具优先级**: 关键词搜索 → 内置 `WebSearch`；已知 URL 抓正文 → `WebFetch`。两者均已实测可用, 不装第三方搜索 MCP
+- **WebFetch 前置配置**: 自定义 `ANTHROPIC_BASE_URL` 下 WebFetch 默认会撞 preflight 域名检查(硬编码 `api.anthropic.com`, 报 "Unable to verify domain is safe"——是 preflight 自身失败, 不是目标站被拦)。须在 `~/.claude/settings.json` 置 `"skipWebFetchPreflight": true`, 改动当前会话热生效, 无需重启
+- **禁止装第三方搜索 MCP**: Tavily / Brave / DuckDuckGo 等一律不装——内置 WebSearch 已可用, 且它们要 API key + 月额度, 收益为负
+- **agent-browser 保底**: 只在 WebFetch/WebSearch 都拿不到时启用(要注册/登录才可见的页面、反爬站点)。走官方登录(`local-login`), 不造 token、不硬注入登录态。**不默认起浏览器**——它比 WebFetch 慢一个量级
+- **GitHub 查询优先用 `gh`**: 查 GitHub issues/PR/code/repo 一律先 `gh`（已登录走 API, 结果比网页抓取结构化; WebFetch 现已可抓 github.com, 但仍以 `gh` 为先）。示例:`gh search issues --repo <owner/repo> "<关键词>"`、`gh issue view <n> --repo <owner/repo>`、`gh api repos/<owner/repo>/contents/<path> --header "Accept: application/vnd.github.raw"`
 - **策略拦截不重试**: 403/权限/代理/防火墙挡住（WebFetch 拒绝、gh 无权限、clone 被拒）→ 立即通报原因 + 手动替代命令, 不撞第二回
 - **瞬时失败可再试一次**: timeout/429/DNS 抖动 → 最多再试一次, 仍失败再报
 - **Web 搜索时效**:先确认当前日期;对"现状/方案/生态"类结论优先当年结果;时间敏感结论标注数据时间
