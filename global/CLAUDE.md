@@ -22,12 +22,26 @@
 执行链: User Goal → Action → Verify → Report
 反模式: User Message → Explanation → Modify CLAUDE.md
 
+## 知识沉淀纪律(文档通用性)
+
+- 往规范文档(ui-guide.md 等)写的内容必须**通用化**:沉淀「这类场景的默认正确做法」, 不绑具体页面名/个案; 个案仅作文内落点提示, 不占条目主体
+- 布局/样式改动把 flex/grid 默认行为当模板一次写对, 不靠「改了→页面验→返修」交学费; 坑要归到通识根因, 而非页面现象
+
+## UI 布局防回归验证(agent-browser)
+
+> 布局改动只验满屏主场景不够, 同批改动须覆盖少数据分支与滚动归属:
+
+1. 不足一屏(末页/空态)分支: grid/flex 默认 stretch 会把内容拉满 → 内容层加 `align-content:start`
+2. 滚动归属: flex 子项默认 `min-height:auto` 会按内容撑破祖先, 滚动须落内容容器非整页 → 外层 `min-height:0; overflow:hidden`, 内容层 `overflow-y:auto`, 底部固定 `flex-shrink:0`
+3. 验法: 读容器 `scrollHeight/clientHeight` 确认滚动容器归属、body 无滚动, 满/不满两分支各截图
+
 ## 查资料纪律
 
 - 只有**信息不明且对后续推导是必要前提**时才搜索/查外部资料
 - **不为查而查**:能从当前项目代码/文件/git 历史推导出来的,不查外部
 - 外部结论须标注来源;与项目内事实冲突时以项目内为准
-- **查文档用 agent-browser**: 查看外部文档（官方/API/页面）优先 agent-browser；大部分时间 curl 访问不上，不反复撞
+- **禁止内置 WebSearch**: 第三方 API（QAX 等）不支持 Anthropic 服务端搜索。关键词上网搜走 `mcp-duckgo`（DuckDuckGo，无 key）：`npx -y mcporter call --stdio 'uvx --with "duckduckgo-mcp-server[browser]" duckduckgo-mcp-server --search-backend curl' search query="{关键词}" max_results=10`。空结果/被拦再换 `fetch_content` 或 agent-browser，不回退内置 WebSearch、不连撞
+- **查文档用 agent-browser**: 查看外部文档（官方/API/页面）优先 agent-browser；大部分时间 curl 访问不上，不反复撞。已知 URL 也可用 mcp-duckgo 的 `fetch_content`
 - **GitHub 查询优先用 `gh`**: 查 GitHub issues/PR/code/repo 一律先 `gh`（已登录走 API，绕过 WebFetch 域名拦截）；WebFetch/WebSearch 对 github.com 常被策略拦，不撞。示例:`gh search issues --repo <owner/repo> "<关键词>"`、`gh issue view <n> --repo <owner/repo>`、`gh api repos/<owner/repo>/contents/<path> --header "Accept: application/vnd.github.raw"`
 - **策略拦截不重试**: 403/权限/代理/防火墙挡住（WebFetch 拒绝、gh 无权限、clone 被拒）→ 立即通报原因 + 手动替代命令, 不撞第二回
 - **瞬时失败可再试一次**: timeout/429/DNS 抖动 → 最多再试一次, 仍失败再报
