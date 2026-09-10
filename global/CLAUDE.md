@@ -40,8 +40,8 @@
 - 只有**信息不明且对后续推导是必要前提**时才搜索/查外部资料
 - **不为查而查**:能从当前项目代码/文件/git 历史推导出来的,不查外部
 - 外部结论须标注来源;与项目内事实冲突时以项目内为准
-- **禁止内置 WebSearch**: 使用场景在中国，封控导致官方 Anthropic API 不可用，内置 WebSearch 随之不可用。关键词上网搜走 `mcp-duckgo`（DuckDuckGo，无 key）：`npx -y mcporter call --stdio 'uvx --with "duckduckgo-mcp-server[browser]" duckduckgo-mcp-server --search-backend curl' search query="{关键词}" max_results=10`。空结果/被拦再换 `fetch_content` 或 agent-browser，不回退内置 WebSearch、不连撞
-- **查文档用 agent-browser**: 查看外部文档（官方/API/页面）优先 agent-browser；大部分时间 curl 访问不上，不反复撞。已知 URL 也可用 mcp-duckgo 的 `fetch_content`
+- **禁止内置 WebSearch**: 使用场景在中国，封控导致官方 Anthropic API 不可用，内置 WebSearch 随之不可用。关键词上网搜走 `mcp-duckgo`（DuckDuckGo，无 key）：`npx -y mcporter call --stdio 'uvx --with "duckduckgo-mcp-server[browser]" duckduckgo-mcp-server --search-backend curl' search query="{关键词}" max_results=10`。空结果/被拦先 `fetch_content`，再保底 agent-browser；不回退内置 WebSearch、不连撞
+- **agent-browser 保底**: 公开页/无登录文档优先 mcp-duckgo `fetch_content`。要看必须注册或登录的页面 → 用 agent-browser 走官方登录（`local-login`），不造 token、不硬注入登录态
 - **GitHub 查询优先用 `gh`**: 查 GitHub issues/PR/code/repo 一律先 `gh`（已登录走 API，绕过 WebFetch 域名拦截）；WebFetch/WebSearch 对 github.com 常被策略拦，不撞。示例:`gh search issues --repo <owner/repo> "<关键词>"`、`gh issue view <n> --repo <owner/repo>`、`gh api repos/<owner/repo>/contents/<path> --header "Accept: application/vnd.github.raw"`
 - **策略拦截不重试**: 403/权限/代理/防火墙挡住（WebFetch 拒绝、gh 无权限、clone 被拒）→ 立即通报原因 + 手动替代命令, 不撞第二回
 - **瞬时失败可再试一次**: timeout/429/DNS 抖动 → 最多再试一次, 仍失败再报
