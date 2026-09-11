@@ -21,7 +21,10 @@ Claude Code / Cursor 的 skill 集合。skill 由 `SKILL.md` 定义一类任务�
    npx skills add Manshawar/tkt-skills -g
    ```
 
-2. **导入全局协作规则**(Claude Code)
+2. **本机环境初始化**(换机器/重装系统时)
+   用 `/tkt-machine-init` 探测平台,按清单补齐缺失的工具链(brew/系统包、node、go、rust、VS Code 扩展)。清单驱动、已装的跳过,产出「该装/不该装」对照表。它只装工具,不碰 Claude Code / cc-switch 的配置。
+
+3. **导入全局协作规则**(Claude Code)
    全局规则正本为 `~/.claude/CLAUDE.md`;本仓库 `global/CLAUDE.md` 是与正本逐行一致的留档副本。新机器上建立全局规则:
 
    ```bash
@@ -37,7 +40,7 @@ Claude Code / Cursor 的 skill 集合。skill 由 `SKILL.md` 定义一类任务�
    - 其他 agent:写入你读取全局指令的文件
    ```
 
-3. **tkt-rules 项目初始化**
+4. **tkt-rules 项目初始化**
    在项目根目录打开 Claude,触发 `/tkt-rules`,按交互回答生成 `AGENTS.md` 与指向它的 `CLAUDE.md`(渐进式披露 WHAT/WHY/HOW)。
 
 ### 开发协作
@@ -77,6 +80,7 @@ Claude Code / Cursor 的 skill 集合。skill 由 `SKILL.md` 定义一类任务�
 | --- | --- | --- |
 | [tkt-cc-setup](skills/tool/tkt-cc-setup/SKILL.md) | Claude Code + cc-switch 本机排查/一键配置 — 底部 HUD、双 token、通用配置持久化 | global |
 | [tkt-ccr-init](skills/tool/tkt-ccr-init/SKILL.md) | CCR 新电脑初始化 — launchd/3456、鉴权、proxy、主模型全名、cc-switch 同步 | global |
+| [tkt-machine-init](skills/tool/tkt-machine-init/SKILL.md) | 新机器/重装后环境初始化 — 分平台(mac/win/linux)按清单补工具链，产出该装/不该装对照表 | global |
 | [skills-cli](skills/tool/skills-cli/SKILL.md) | `npx skills` 命令速查与判断树 — 装/更新/查/移除前先判断该用哪个命令 | global |
 | [clash-verge-rule](skills/tool/clash-verge-rule/SKILL.md) | 管理 Clash 白名单分流规则 — 加/删规则、配常用规则、清空/列出、内网 DNS | global |
 | [tkt-jira-fix](skills/tool/tkt-jira-fix/SKILL.md) | 用 agent-browser 填 JIRA bug 处理日志（开始处理 + 已修复填表） | global |
