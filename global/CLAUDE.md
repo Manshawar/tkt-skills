@@ -1,6 +1,7 @@
 # 全局协作规则
 
 ## 回复风格
+
 - 砍客套/铺垫/填充词, 短句优先; 技术实质完整保留
 - 砍推理过程; 保留: 结论、依据（文件:行）、用户下一步
 - 审查/对比/排错: 必须写发现, 不能只写「没问题」或「已修复」
@@ -42,7 +43,6 @@
 - 外部结论须标注来源;与项目内事实冲突时以项目内为准
 - **工具优先级**: 关键词搜索 → 内置 `WebSearch`；已知 URL 抓正文 → `WebFetch`。两者均已实测可用, 不装第三方搜索 MCP
 - **WebFetch 前置配置**: 自定义 `ANTHROPIC_BASE_URL` 下 WebFetch 默认会撞 preflight 域名检查(硬编码 `api.anthropic.com`, 报 "Unable to verify domain is safe"——是 preflight 自身失败, 不是目标站被拦)。须在 `~/.claude/settings.json` 置 `"skipWebFetchPreflight": true`, 改动当前会话热生效, 无需重启
-- **禁止装第三方搜索 MCP**: Tavily / Brave / DuckDuckGo 等一律不装——内置 WebSearch 已可用, 且它们要 API key + 月额度, 收益为负
 - **agent-browser 保底**: 只在 WebFetch/WebSearch 都拿不到时启用(要注册/登录才可见的页面、反爬站点)。走官方登录(`local-login`), 不造 token、不硬注入登录态。**不默认起浏览器**——它比 WebFetch 慢一个量级
 - **GitHub 查询优先用 `gh`**: 查 GitHub issues/PR/code/repo 一律先 `gh`（已登录走 API, 结果比网页抓取结构化; WebFetch 现已可抓 github.com, 但仍以 `gh` 为先）。示例:`gh search issues --repo <owner/repo> "<关键词>"`、`gh issue view <n> --repo <owner/repo>`、`gh api repos/<owner/repo>/contents/<path> --header "Accept: application/vnd.github.raw"`
 - **策略拦截不重试**: 403/权限/代理/防火墙挡住（WebFetch 拒绝、gh 无权限、clone 被拒）→ 立即通报原因 + 手动替代命令, 不撞第二回
@@ -85,14 +85,15 @@ AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要
 
 ## 验证路由
 
-| 改动 | 走哪条 |
-| --- | --- |
-| 前端/UI | agent-browser 操作 + 读页面状态/文本指标确认生效 |
-| 后端/接口 | 跑测试用例(项目自身测试框架) |
-| 改后端且改了前端消费的接口契约 | 前后都验(后端用例 + 前端 agent-browser 走一遍消费路径) |
+| 改动                               | 走哪条                                                      |
+| ---------------------------------- | ----------------------------------------------------------- |
+| 前端/UI                            | agent-browser 操作 + 读页面状态/文本指标确认生效            |
+| 后端/接口                          | 跑测试用例(项目自身测试框架)                                |
+| 改后端且改了前端消费的接口契约     | 前后都验(后端用例 + 前端 agent-browser 走一遍消费路径)      |
 | 攒一批**已稳定**功能要防回归 | `/tkt-test-gen`(生成 e2e 进平台;锚点是「稳定」非「做完」) |
 
 **后端测试时机**(全局原则;框架/命令由各项目 AGENTS.md 定制):
+
 - 后端验证便宜,**测试用例本身就是验证**,写完就跑——不像前端拆 verify(弃)+e2e(沉淀)两层,后端「验证」和「沉淀」是同一条用例
 - **必写**:有外部消费者的契约(输入→输出/错误码/边界)、bug 修复(先写复现 bug 的失败测试再修绿)、复杂纯逻辑(算法/状态机/多分支)
 - **不写**:重复框架能力的、凑覆盖率的、测私有实现细节的;一次性脚本/琐碎 CRUD 无痛点不写
@@ -103,7 +104,10 @@ AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要
 - 仅当本任务已有可打开的页面/桌面窗口, 且终端/网络日志/代码不够定位时, 才用 `agent-browser`
 - UI 无法点击/被遮挡/显示异常 → 截图; 接口数据不对 → 查网络请求; 前后端不一致 → 对比页面与接口
 - 无页面或 skill 不可用: 用现有日志, 不装、不改用 Playwright 凑
-- **图片/截图读取**: 一律 `Read` + 本地绝对路径原生 image message，禁止 base64 直拼 message。主模型能直读准就主线程直接 Read；主模型非多模态或 Read 识别失败/读不准 → 如实告知用户当前模型读不了。
+- **图片/截图读取**: 一律 `Read` + 本地绝对路径原生 image message，禁止 base64 直拼 message。按客户端分流：
+  - **Codex(gpt-5.6-luna, 视觉可靠)**: 直接 `Read` 判读, 不转派
+  - **Claude Code(主模型 deepseek-v4-flash, 视觉不可靠)**: 需读出图中精确文本/数字时, 派 `vision-reader` 子 agent 读(定义 `~/.claude/agents/vision-reader.md`, 锁 `model: opus` → 当前映射 glm-5.3-flash, 已内置禁解码约束); 仅看大块布局/有无某元素可直读
+  - 无语义随机串(ID/口令/哈希/验证码)任何模型都不读, 要用户复制粘贴; 模型读数一律标置信度
 - **禁止 base64 直传主上下文**: 读图一律走 `Read` 原生 image message，不把 base64 文本拼进 message（撑爆上下文且纯文本模型读不了）。
 
 ## 节点验收
@@ -128,6 +132,7 @@ AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要
 ```
 
 字段纪律:
+
 - Done: 一句话交付物; 不写过程/试错
 - Files: `path:line` 定位; 不贴 diff/hash/代码块
 - Open: 只写用户未定/外部阻塞/跨会话依赖; 不写软 TODO 和已闭环项
