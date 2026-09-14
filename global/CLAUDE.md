@@ -18,7 +18,8 @@
 - 用户纠正当前任务: 只修正当前任务, 不因一次错误/失败/纠正就修改 CLAUDE.md
 - CLAUDE.md 只存持久规则: 仅当用户明确说「记住/以后都这样/写进 CLAUDE.md」等永久要求时才修改
 - **端口纪律**: 要开的端口被占用 → 不 kill 占用进程、不硬用该端口, 自己挑一个空闲端口启动; 任务完成自行关闭自启的进程/端口。同项目下已有现成跑着的服务/端口(含本会话他处起的) → 直接复用, 不另起
-- **防输出退化**: 想清楚下一步就直接调工具, 不在回复里重复排练「准备调用/发工具/cwd 无影响」等占位; 若发现同一无意义占位句连续输出多条 → 立即停下检查是否陷入生成循环, 而不是继续; 用户打断说「卡住了/怎么不动」→ 先停下来分析自己是否在空转, 别再按原模式继续
+- **阶段边界报进展**: 一个子问题查完、进入下一段之前补一句(刚证实什么 / 下一步查什么 / 还差什么), 不每轮工具都报, 也别等整件事跑完才开口; 单发工具调用与纯问答不报
+- **防输出退化**: 禁的是排练工具机制(「准备调用 Read」「cwd 无影响」)与重复同一句占位, 不禁止说目标与阶段结论 —— 想清楚下一步直接调工具; 若同一无意义占位句连续输出多条 → 立即停下检查是否陷入生成循环; 用户打断说「卡住了/怎么不动」→ 先停下来分析是否在空转, 别再按原模式继续
 
 执行链: User Goal → Action → Verify → Report
 反模式: User Message → Explanation → Modify CLAUDE.md
@@ -106,7 +107,8 @@ AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要
 - 无页面或 skill 不可用: 用现有日志, 不装、不改用 Playwright 凑
 - **图片/截图读取**: 一律 `Read` + 本地绝对路径原生 image message，禁止 base64 直拼 message。按客户端分流：
   - **Codex(gpt-5.6-luna, 视觉可靠)**: 直接 `Read` 判读, 不转派
-  - **Claude Code(主模型 deepseek-v4-flash, 视觉不可靠)**: 需读出图中精确文本/数字时, 派 `vision-reader` 子 agent 读(定义 `~/.claude/agents/vision-reader.md`, 锁 `model: opus` → 当前映射 glm-5.3-flash, 已内置禁解码约束); 仅看大块布局/有无某元素可直读
+  - **Claude Code(主模型 deepseek-v4-flash, 视觉不可靠)**: 需读出图中精确文本/数字时, 派 `vision-reader` 子 agent 读(定义 `~/.claude/agents/vision-reader.md`, `model: opus` → 当前映射 glm-5.3-flash, `tools: Read` 结构性禁掉解码); 仅看大块布局/有无某元素可直读
+  - 若报 `Agent type 'vision-reader' not found`: 是该会话启动早于该 agent 创建, 新开会话即恢复; 急用则降级 `Agent(subagent_type:"general-purpose", model:"opus")`, 并在 prompt 内写明「只用 Read、禁 Bash、禁解码图片、看不清就说看不清」
   - 无语义随机串(ID/口令/哈希/验证码)任何模型都不读, 要用户复制粘贴; 模型读数一律标置信度
 - **禁止 base64 直传主上下文**: 读图一律走 `Read` 原生 image message，不把 base64 文本拼进 message（撑爆上下文且纯文本模型读不了）。
 
