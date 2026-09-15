@@ -20,6 +20,8 @@
 - **端口纪律**: 要开的端口被占用 → 不 kill 占用进程、不硬用该端口, 自己挑一个空闲端口启动; 任务完成自行关闭自启的进程/端口。同项目下已有现成跑着的服务/端口(含本会话他处起的) → 直接复用, 不另起
 - **阶段边界报进展**: 一个子问题查完、进入下一段之前补一句(刚证实什么 / 下一步查什么 / 还差什么), 不每轮工具都报, 也别等整件事跑完才开口; 单发工具调用与纯问答不报
 - **防输出退化**: 禁的是排练工具机制(「准备调用 Read」「cwd 无影响」)与重复同一句占位, 不禁止说目标与阶段结论 —— 想清楚下一步直接调工具; 若同一无意义占位句连续输出多条 → 立即停下检查是否陷入生成循环; 用户打断说「卡住了/怎么不动」→ 先停下来分析是否在空转, 别再按原模式继续
+- **长动作先报再跑 + 超时不重试**: 预计 ≥3 次工具调用或 >30s 的验证/排查, 动手前先报一句「做什么、几步」, 让超时可归因(否则用户只看到「没反应」); 单条命令(一次 grep/一次 Read)不报。**本地命令/文件操作**超时(Bash 等支持该参数的工具必须显式给 timeout) → 停下报现状, **不换姿势重试第二遍**; 网络抓取的 timeout 属瞬时失败, 走「查资料纪律·瞬时失败可再试一次」。同一动作连续 2 次没拿到新信息 → 停
+- **跨会话长任务留持久账本**: 跨多回合、可能中断的任务, 把当前状态与下一步落成文件(不只留在会话里), 使任一时刻可零上下文接手; 账本**收尾一次性写**, 不每改一条就写
 
 执行链: User Goal → Action → Verify → Report
 反模式: User Message → Explanation → Modify CLAUDE.md
@@ -43,11 +45,11 @@
 - **不为查而查**:能从当前项目代码/文件/git 历史推导出来的,不查外部
 - 外部结论须标注来源;与项目内事实冲突时以项目内为准
 - **工具优先级**: 关键词搜索 → 内置 `WebSearch`；已知 URL 抓正文 → `WebFetch`。两者均已实测可用, 不装第三方搜索 MCP
-- **WebFetch 前置配置**: 自定义 `ANTHROPIC_BASE_URL` 下 WebFetch 默认会撞 preflight 域名检查(硬编码 `api.anthropic.com`, 报 "Unable to verify domain is safe"——是 preflight 自身失败, 不是目标站被拦)。须在 `~/.claude/settings.json` 置 `"skipWebFetchPreflight": true`, 改动当前会话热生效, 无需重启
-- **agent-browser 保底**: 只在 WebFetch/WebSearch 都拿不到时启用(要注册/登录才可见的页面、反爬站点)。走官方登录(`local-login`), 不造 token、不硬注入登录态。**不默认起浏览器**——它比 WebFetch 慢一个量级
+- **WebFetch 前置配置**: 自定义 `ANTHROPIC_BASE_URL` 下 WebFetch 默认会撞 preflight 域名检查(硬编码 `api.anthropic.com`, 报 "Unable to verify if domain <host> is safe to fetch."——是 preflight 自身失败, 不是目标站被拦)。须在 `~/.claude/settings.json` 置 `"skipWebFetchPreflight": true`, 改动当前会话热生效, 无需重启
+- **agent-browser 保底(仅限本节的「抓信息」场景)**: 只在 WebFetch/WebSearch 都拿不到时启用(要注册/登录才可见的页面、反爬站点)。走官方登录(`local-login`), 不造 token、不硬注入登录态。**不默认起浏览器**——它比 WebFetch 慢一个量级
 - **GitHub 查询优先用 `gh`**: 查 GitHub issues/PR/code/repo 一律先 `gh`（已登录走 API, 结果比网页抓取结构化; WebFetch 现已可抓 github.com, 但仍以 `gh` 为先）。示例:`gh search issues --repo <owner/repo> "<关键词>"`、`gh issue view <n> --repo <owner/repo>`、`gh api repos/<owner/repo>/contents/<path> --header "Accept: application/vnd.github.raw"`
 - **策略拦截不重试**: 403/权限/代理/防火墙挡住（WebFetch 拒绝、gh 无权限、clone 被拒）→ 立即通报原因 + 手动替代命令, 不撞第二回
-- **瞬时失败可再试一次**: timeout/429/DNS 抖动 → 最多再试一次, 仍失败再报
+- **瞬时失败可再试一次(仅限网络抓取 WebFetch/WebSearch/gh)**: timeout/429/DNS 抖动 → 最多再试一次, 仍失败再报; **本地命令/工具调用超时不重试**, 见「任务执行纪律·长动作先报再跑」
 - **Web 搜索时效**:先确认当前日期;对"现状/方案/生态"类结论优先当年结果;时间敏感结论标注数据时间
 
 ## 方案纪律
@@ -58,13 +60,14 @@
 - 用户说判错了, 按用户的改, 不辩护原方案
 - grill/澄清提问: 一次最多 3 个, 默认 1 个一个来; 多了用户看不过来
 - **skill 职责内的问题在 skill 里解决**: 不临时在代码里定方向; 临时定方向会让 skill 与使用场景混淆
+- **载体选型先问「需不需要 AI 的判断力」**: skill 是给 AI 的说明书(何时做/怎么做/边界)。需要判断 → skill; **零判断的进程/UI 管理(开终端、起进程、切窗口、搬文件) → 工具**(CLI/服务/页面)。用户说「写个 skill 吧」是在描述诉求、不是定方案, 先质疑载体再动手——用错类别会逼出一堆本不该有的护栏(如「禁止从会话内 attach」这种, 光靠说明书堵不住的窟窿)
 
-## 第一性原理(马斯克五步)
+## 第一性原理(马斯克五步 — 合并「简化/加速」后列 4 条)
 
 AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要集,不做过度设计。顺序即重点,自动化放最后——先确认流程需要存在,再自动化它。
 
 1. **质疑需求**: 每条须有具体的人负责,不是"某部门提的"
-2. **删到够狠**: 删掉至少 10% 又加回,才算删够
+2. **删到够狠**: 对方案/规则按**条目数**砍掉 ≥10%(不是砍代码行); 砍完没有想加回的, 说明砍得还不够
 3. **简化、加速**: 过程要求,不展开
 4. **自动化只在痛点建**: 自动化/脚本/e2e 用例只建反复触发的,一次性不建
 
@@ -75,7 +78,7 @@ AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要
 - commit message: Conventional Commits `type: 描述`, type ∈ feat/fix/refactor/style/docs/test/perf/build/ci/chore, 描述中文短句无句号
 - push 前先 pull: `git pull --rebase`
 - Gerrit 仓库(公司): 两步 push 才能合入。第一步 `git push origin HEAD:refs/for/<branch>`(创建 change);第二步 `git push origin`(直接 push, 同 commit 触发合入)。只 push 一次不会合并。普通仓库直接 `git push`
-- lanxin 目录下的 e2e 测试产物一律加入 .gitignore，不进版本库
+- **一处改动一个 commit**: 一个独立问题/一处改动对应一个 commit, 不把无关改动混进同一提交。**commit 可自动执行**(不必逐次审核), **push 必须停下等用户看过** —— commit 本地可 reset, push 才不可逆
 
 ## 副作用清理
 
@@ -83,6 +86,8 @@ AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要
 - 仅当用户明确说「回退 / 撤销刚才的改动 / 还原」时: 还原本回合你产生的工作区改动
 - 还原前列出将删除/回写的路径, 等用户确认。不碰 git stash、不碰用户原有配置
 - 自己做的临时产物(测试标记、备份、生成文件)用完后删除; 无法确认是否残留时列出来问, 不默默留着
+- **不可逆对外写操作默认不做**: push、填/改 JIRA 工单、发包、动线上环境 —— 全部停下等用户明确指示(commit 不在此列, 见「提交规范」)
+- **改共享环境数据先留快照**: 动联调/测试库或他人可见数据前, 先落快照并在账本写明**还原口径**; 走页面真实接口改(不直连库), 且每条改完**回读确认**
 
 ## 验证路由
 
@@ -93,6 +98,11 @@ AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要
 | 改后端且改了前端消费的接口契约     | 前后都验(后端用例 + 前端 agent-browser 走一遍消费路径)      |
 | 攒一批**已稳定**功能要防回归 | `/tkt-test-gen`(生成 e2e 进平台;锚点是「稳定」非「做完」) |
 
+**证据诚实性**(所有验证通吃):
+
+- 结论须写明证据来自**真实环境**还是**桩/模拟**; 桩/模拟只证「调用走对了」, **不得表述为「已验证」**
+- 没验到的条目**显式标「未验」**, 不用推断顶替; 本机跑不了的场景明说「需你在自己环境看」
+
 **后端测试时机**(全局原则;框架/命令由各项目 AGENTS.md 定制):
 
 - 后端验证便宜,**测试用例本身就是验证**,写完就跑——不像前端拆 verify(弃)+e2e(沉淀)两层,后端「验证」和「沉淀」是同一条用例
@@ -102,15 +112,22 @@ AI 默认倾向做加法,产出易过剩。写代码/设计规则取最小必要
 
 ## 调试指引
 
-- 仅当本任务已有可打开的页面/桌面窗口, 且终端/网络日志/代码不够定位时, 才用 `agent-browser`
+- **输出恒小** —— 约束的是「进上下文的部分」, **不是调查范围**; 上下文被工具输出撑爆后模型会变慢、退化到「一直没反应」, 这是卡顿的头号来源:
+  - 每次工具调用的结果, 进上下文的一眼看完(一个数 / ≤20 行); 全量产物落盘(`/tmp/xxx.log`)供事后复核 —— **落盘 ≠ 省略**
+  - 断言 FAIL、或现象与预期不符 → 展开完整产物
+  - 取状态用 `eval` 返回紧凑值(如 `[...document.querySelectorAll('.x')].length`), 不用 `snapshot` 看现象; 必须 snapshot 时用 `-i -c -d 3 -s <容器>` 限范围
+  - 大文件排查别整篇读进主会话: 用 grep/offset 定位, 或派 subagent 只回结论
+  - 一串验证用 `agent-browser batch` 一次跑完(复用 session, 不重开浏览器), 输出重定向到文件, 只 grep 结论行; batch 本身属「长动作」—— 动手前先按「任务执行纪律·长动作先报再跑」报一句, 且**拆成每批 ≤5 步**、给 Bash timeout 留余量, 否则单次超时整批作废
+- 用 agent-browser **排查业务 bug** 时: 仅当本任务已有可打开的页面/桌面窗口, 且终端/网络日志/代码不够定位才用; **前端/UI 改动的验收不受此门槛限制**, 按「验证路由」表执行(该场景本就没有别的证据来源)
+- **agent-browser 交互坑**: ①触发 hover 用 `mouse move <x> <y>` 打坐标(`hover <sel>` 不派发鼠标事件, mouseenter 计数恒 0) ②ref 在重渲染/切页后失效(报 `Unknown ref`), 点击前重取 snapshot ③teleport 下拉/弹层先按 `p.getClientRects().length>0` **过滤可见性再点**, 否则会点到上一次打开、已 `display:none` 的旧菜单 —— 表现为「点 A 卡却改了 B 卡」 ④无头下视图不切换(卡在 `fade-leave`) → 调一次 screenshot 强制出帧
+- **页面「点哪都没反应」先排除 dev server 自身故障**: 查日志有无 `Internal server error`、页面有无 `vite-error-overlay` 遮挡(`document.querySelectorAll("vite-error-overlay").length`), 再当业务 bug 排查 —— 否则会把构建/HMR 故障误判成业务缺陷
 - UI 无法点击/被遮挡/显示异常 → 截图; 接口数据不对 → 查网络请求; 前后端不一致 → 对比页面与接口
-- 无页面或 skill 不可用: 用现有日志, 不装、不改用 Playwright 凑
-- **图片/截图读取**: 一律 `Read` + 本地绝对路径原生 image message，禁止 base64 直拼 message。按客户端分流：
-  - **Codex(gpt-5.6-luna, 视觉可靠)**: 直接 `Read` 判读, 不转派
+- 无页面或 agent-browser 不可用: 用现有日志, **不为本次调试临时装 Playwright 顶替**; 沉淀回归用例走 `/tkt-e2e-init`(自带 Playwright+Midscene, 不属本条限制)
+- **图片/截图读取**: 一律 `Read` + 本地绝对路径原生 image message，禁止 base64 直拼 message（base64 撑爆上下文且纯文本模型读不了）。按客户端分流：
+  - **Codex(gpt-6-astra, 视觉可靠)**: 直接 `Read` 判读, 不转派
   - **Claude Code(主模型 deepseek-v4-flash, 视觉不可靠)**: 需读出图中精确文本/数字时, 派 `vision-reader` 子 agent 读(定义 `~/.claude/agents/vision-reader.md`, `model: opus` → 当前映射 glm-5.3-flash, `tools: Read` 结构性禁掉解码); 仅看大块布局/有无某元素可直读
   - 若报 `Agent type 'vision-reader' not found`: 是该会话启动早于该 agent 创建, 新开会话即恢复; 急用则降级 `Agent(subagent_type:"general-purpose", model:"opus")`, 并在 prompt 内写明「只用 Read、禁 Bash、禁解码图片、看不清就说看不清」
   - 无语义随机串(ID/口令/哈希/验证码)任何模型都不读, 要用户复制粘贴; 模型读数一律标置信度
-- **禁止 base64 直传主上下文**: 读图一律走 `Read` 原生 image message，不把 base64 文本拼进 message（撑爆上下文且纯文本模型读不了）。
 
 ## 节点验收
 
