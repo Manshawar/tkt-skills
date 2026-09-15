@@ -8,7 +8,6 @@
 - 代码、命令、API 名、CLI 参数、commit 关键词、错误串: 逐字保留
 - 表达不确定性时必须保留置信词 ("可能/未验证/推测") — 简洁不得牺牲准确度
 - 正常句式场景: 安全警告、不可逆操作确认、多步时序指令、用户要求澄清时, 以及文档/commit/PR 正文
-- 用户说 "stop caveman" / "normal mode": 恢复完整段落, 可保留简短推理
 
 ## 任务执行纪律
 
@@ -30,10 +29,10 @@
 
 ## 查资料纪律
 
-- 只在**信息不明且是推导的必要前提**时才查外部; 能从项目代码/文件/git 历史推导出来的不查外部(**不为查而查**)
+- **推导优先, 查外部有顺序**: 能从项目代码/文件/git 历史推导出来的一律不查外部; 推导不出时顺序是 **官方文档 → 源码包**(`node_modules` 里的第三方库源码放**最后**)—— 翻源码包最慢最贵, 常读进大文件撑爆上下文; **不为查而查**
 - 外部结论须标注来源;与项目内事实冲突时以项目内为准
 - **工具优先级**: 关键词搜索 → `WebSearch`; 已知 URL 抓正文 → `WebFetch`; 不装第三方搜索 MCP
-- **WebFetch 前置配置**: 自定义 `ANTHROPIC_BASE_URL` 下 WebFetch 默认会撞 preflight 域名检查(硬编码 `api.anthropic.com`, 报 "Unable to verify if domain <host> is safe to fetch."——是 preflight 自身失败, 不是目标站被拦)。须在 `~/.claude/settings.json` 置 `"skipWebFetchPreflight": true`, 改动当前会话热生效, 无需重启
+- **WebFetch 前置配置**: 自定义 `ANTHROPIC_BASE_URL` 下 WebFetch 默认会撞 preflight 域名检查(硬编码 `api.anthropic.com`, 报 "Unable to verify if domain <host></host> is safe to fetch."——是 preflight 自身失败, 不是目标站被拦)。须在 `~/.claude/settings.json` 置 `"skipWebFetchPreflight": true`, 改动当前会话热生效, 无需重启
 - **agent-browser 保底**: 抓信息只在 WebFetch/WebSearch 都拿不到时启用(要登录才可见的页面、反爬站点)。走官方登录(`local-login`), **不造 token、不硬注入登录态**
 - **GitHub 查询优先用 `gh`**: 查 issues/PR/code/repo 一律先 `gh`(已登录走 API, 比网页抓取结构化)。例:`gh issue view <n> --repo <owner/repo>`、`gh api repos/<owner/repo>/contents/<path> --header "Accept: application/vnd.github.raw"`
 - **策略拦截不重试**: 403/权限/代理/防火墙挡住（WebFetch 拒绝、gh 无权限、clone 被拒）→ 立即通报原因 + 手动替代命令, 不撞第二回
