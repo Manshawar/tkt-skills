@@ -100,6 +100,38 @@ export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897
 brew update
 ```
 
+### F. Codex / ChatGPT GUI 客户端走 Clash
+
+**症状**：终端里的 `codex exec` 正常，但 Codex / ChatGPT GUI 客户端首次对话连续出现 5 次 `Reconnecting...`，随后才回复，或客户端请求失败。
+
+**根因**：终端进程继承了当前 shell 的 `http_proxy` / `https_proxy`；从 Dock 或 Finder 启动的 GUI 客户端不继承 shell 环境。Codex 默认优先走 Responses WebSocket，代理链路不稳定时会重试 5 次后回退 HTTP。
+
+**推荐处理顺序**：
+
+1. Clash Verge Rev 开启 TUN，并确认运行时配置包含 `tun.enable: true`。TUN 可覆盖 GUI 客户端未继承 shell 代理的网络路径。
+2. 同时把 Clash 混合端口写入 macOS 用户级 `launchd`，让从 Dock/Finder 启动的 GUI 客户端也拿到代理：
+
+```bash
+CLASH_MIXED_PORT=7897
+launchctl setenv http_proxy "http://127.0.0.1:${CLASH_MIXED_PORT}"
+launchctl setenv https_proxy "http://127.0.0.1:${CLASH_MIXED_PORT}"
+launchctl setenv HTTP_PROXY "http://127.0.0.1:${CLASH_MIXED_PORT}"
+launchctl setenv HTTPS_PROXY "http://127.0.0.1:${CLASH_MIXED_PORT}"
+launchctl setenv ALL_PROXY "http://127.0.0.1:${CLASH_MIXED_PORT}"
+launchctl setenv NO_PROXY "localhost,127.0.0.1,::1"
+```
+
+3. 用 `launchctl getenv http_proxy` / `launchctl getenv HTTPS_PROXY` 验证。
+4. 完全退出 Codex / ChatGPT GUI（`⌘Q`）后重新打开；已有进程不会继承新环境变量。
+
+**不要把以下方案作为首选**：
+
+- 只在当前终端执行 `export`：只对该终端及其子进程生效，不能修复 Dock/Finder 启动的 GUI 客户端。
+- 在 `~/.codex/config.toml` 强制 `supports_websockets = false`：可以绕过 WebSocket 重试，但可能导致客户端功能项消失或产生其他副作用。
+- 在 `~/.codex/.env` 全局注入代理：可能把代理变量传入沙盒，导致沙盒网络或端口判断异常。
+
+**验证**：终端和 GUI 都新建一次对话；终端无 `Reconnecting...` 且 GUI 首次请求直接成功，才算链路修复。若仍失败，先查客户端日志里的 HTTP 状态码和 `cf-mitigated: challenge`，不要继续盲加域名规则。
+
 ## 取舍速查
 
 | 方案 | 命令 | 适用 |
