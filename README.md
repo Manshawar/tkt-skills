@@ -40,7 +40,10 @@ Claude Code / Cursor 的 skill 集合。skill 由 `SKILL.md` 定义一类任务�
    - 其他 agent:写入你读取全局指令的文件
    ```
 
-4. **tkt-rules 项目初始化**
+4. **补齐外部 skill**
+   本机从第三方仓库装的 skill 清单见 [`global/EXTERNAL_SKILLS.md`](global/EXTERNAL_SKILLS.md)(按来源仓库分组 + 复现命令)。本仓库自研 skill 不在此列,由 `npx skills add` 装。
+
+5. **tkt-rules 项目初始化**
    在项目根目录打开 Claude,触发 `/tkt-rules`,按交互回答生成 `AGENTS.md` 与指向它的 `CLAUDE.md`(渐进式披露 WHAT/WHY/HOW)。
 
 ### 开发协作
